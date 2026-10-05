@@ -23,7 +23,13 @@ interface Thresholds {
   lowMinP: number;
 }
 
-const DEFAULT_THRESHOLDS: Thresholds = { pLow: 0.2, pHigh: 0.8, discMin: 0.2, highMaxP: 0.8, lowMinP: 0.2 };
+const DEFAULT_THRESHOLDS: Thresholds = {
+  pLow: 0.2,
+  pHigh: 0.8,
+  discMin: 0.2,
+  highMaxP: 0.8,
+  lowMinP: 0.2,
+};
 
 async function loadPilot(subtestId: string) {
   const bundle = await loadBundle(subtestId);
@@ -38,7 +44,7 @@ export function PilotScreen() {
   return (
     <div>
       <h2>파일럿 데이터·문항 통계</h2>
-      <div className="field" style={{ maxWidth: 420 }}>
+      <div className="field w-narrow">
         <label>소검사 선택</label>
         <select value={subtestId} onChange={(e) => setSubtestId(e.target.value)}>
           <option value="">(선택)</option>
@@ -73,7 +79,9 @@ function PilotBody({ subtestId }: { subtestId: string }) {
     try {
       const json = await readJsonFile(file);
       const summary = await importResults(json, subtestId);
-      setMsg(`가져오기 완료: 추가 ${summary.added}, 중복 ${summary.duplicates}, 문항 불일치 ${summary.mismatchedItems}`);
+      setMsg(
+        `가져오기 완료: 추가 ${summary.added}, 중복 ${summary.duplicates}, 문항 불일치 ${summary.mismatchedItems}`,
+      );
       refresh();
     } catch (e) {
       setErr(e instanceof Error ? e.message : String(e));
@@ -85,7 +93,10 @@ function PilotBody({ subtestId }: { subtestId: string }) {
   const { items, sessions } = data;
   const stats = computeItemStats(items, sessions);
   const mismatches = new Set(
-    difficultyMismatches(items, stats, { highMaxP: thresholds.highMaxP, lowMinP: thresholds.lowMinP }),
+    difficultyMismatches(items, stats, {
+      highMaxP: thresholds.highMaxP,
+      lowMinP: thresholds.lowMinP,
+    }),
   );
   const paths = pathDistribution(sessions);
   const tags = tagComparison(items, stats);
@@ -113,8 +124,16 @@ function PilotBody({ subtestId }: { subtestId: string }) {
         />
       </div>
 
-      {msg && <p className="notice" role="status">{msg}</p>}
-      {err && <p className="notice notice-danger" role="alert">{err}</p>}
+      {msg && (
+        <p className="notice" role="status">
+          {msg}
+        </p>
+      )}
+      {err && (
+        <p className="notice notice-danger" role="alert">
+          {err}
+        </p>
+      )}
 
       <p className="muted">
         응시자 {sessions.length}명. 참고 기준값(p {Math.round(thresholds.pLow * 100)}~
@@ -152,14 +171,27 @@ function ThresholdControls({
     onChange({ ...thresholds, [key]: v });
   }
   return (
-    <fieldset style={{ border: '1px solid var(--color-border)', borderRadius: 6, padding: '0.75rem' }}>
+    <fieldset className="box">
       <legend>기준값 조정</legend>
       <div className="field-row">
         <NumField label="p 하한(%)" value={thresholds.pLow} onChange={(v) => set('pLow', v)} />
         <NumField label="p 상한(%)" value={thresholds.pHigh} onChange={(v) => set('pHigh', v)} />
-        <NumField label="변별도 하한" value={thresholds.discMin} pct={false} onChange={(v) => set('discMin', v)} />
-        <NumField label="'상' 난도 p 상한(%)" value={thresholds.highMaxP} onChange={(v) => set('highMaxP', v)} />
-        <NumField label="'하' 난도 p 하한(%)" value={thresholds.lowMinP} onChange={(v) => set('lowMinP', v)} />
+        <NumField
+          label="변별도 하한"
+          value={thresholds.discMin}
+          pct={false}
+          onChange={(v) => set('discMin', v)}
+        />
+        <NumField
+          label="'상' 난도 p 상한(%)"
+          value={thresholds.highMaxP}
+          onChange={(v) => set('highMaxP', v)}
+        />
+        <NumField
+          label="'하' 난도 p 하한(%)"
+          value={thresholds.lowMinP}
+          onChange={(v) => set('lowMinP', v)}
+        />
       </div>
     </fieldset>
   );
@@ -245,7 +277,12 @@ function ItemStatsTable({
               );
             }
             if (s.codingDist) {
-              notes.push('코드: ' + Object.entries(s.codingDist).map(([k, v]) => `${k}:${v}`).join(' '));
+              notes.push(
+                '코드: ' +
+                  Object.entries(s.codingDist)
+                    .map(([k, v]) => `${k}:${v}`)
+                    .join(' '),
+              );
             }
             return (
               <tr key={s.itemId}>
@@ -261,9 +298,7 @@ function ItemStatsTable({
                 </td>
                 <td>{s.n ? fmtMs(s.timeMeanMs) : '-'}</td>
                 <td>{s.n ? fmtMs(s.timeMedianMs) : '-'}</td>
-                <td className="muted" style={{ fontSize: '0.8rem' }}>
-                  {notes.join(' · ')}
-                </td>
+                <td className="muted text-xs">{notes.join(' · ')}</td>
               </tr>
             );
           })}
@@ -273,7 +308,11 @@ function ItemStatsTable({
   );
 }
 
-function PathTable({ paths }: { paths: Record<string, { count: number; grades: Record<string, number> }> }) {
+function PathTable({
+  paths,
+}: {
+  paths: Record<string, { count: number; grades: Record<string, number> }>;
+}) {
   const entries = Object.entries(paths);
   if (entries.length === 0) return <p className="muted">결과가 없습니다.</p>;
   return (
@@ -304,7 +343,11 @@ function PathTable({ paths }: { paths: Record<string, { count: number; grades: R
   );
 }
 
-function TagTable({ tags }: { tags: Record<string, { count: number; avgP: number; avgDisc: number | null }> }) {
+function TagTable({
+  tags,
+}: {
+  tags: Record<string, { count: number; avgP: number; avgDisc: number | null }>;
+}) {
   const entries = Object.entries(tags);
   if (entries.length === 0) return <p className="muted">태그가 지정된 문항이 없습니다.</p>;
   return (

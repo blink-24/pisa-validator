@@ -7,7 +7,12 @@ import { ConfirmDialog } from '../../components/ConfirmDialog';
 import { BackupBanner } from './BackupBanner';
 import { useAsync } from '../../hooks/useAsync';
 import { listSubtestSummaries, loadBundle, type SubtestSummary } from '../../data/db';
-import { createSubtest, cloneSubtest, deleteSubtest, type DeleteResultChoice } from '../../data/subtests';
+import {
+  createSubtest,
+  cloneSubtest,
+  deleteSubtest,
+  type DeleteResultChoice,
+} from '../../data/subtests';
 import {
   exportSubtest,
   downloadJson,
@@ -26,7 +31,12 @@ type ConfState = 'pass' | 'warn' | 'error';
 async function conformanceState(subtestId: string): Promise<ConfState> {
   const b = await loadBundle(subtestId);
   if (!b) return 'error';
-  const r = runConformance({ subtest: b.subtest, units: b.units, passages: b.passages, items: b.items });
+  const r = runConformance({
+    subtest: b.subtest,
+    units: b.units,
+    passages: b.passages,
+    items: b.items,
+  });
   if (hasBlockingError(r)) return 'error';
   return r.some((x) => x.level === 'warn') ? 'warn' : 'pass';
 }
@@ -96,7 +106,7 @@ export function SubtestList() {
 
       <div className="list-header">
         <h2>소검사 목록</h2>
-        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+        <div className="row">
           <button className="btn btn-primary" onClick={() => setShowCreate(true)}>
             소검사 생성
           </button>
@@ -135,7 +145,9 @@ export function SubtestList() {
       {loading ? (
         <p className="muted">불러오는 중...</p>
       ) : !data || data.length === 0 ? (
-        <p className="muted">아직 소검사가 없습니다. '소검사 생성' 또는 '샘플 소검사 추가'로 시작하세요.</p>
+        <p className="muted">
+          아직 소검사가 없습니다. '소검사 생성' 또는 '샘플 소검사 추가'로 시작하세요.
+        </p>
       ) : (
         <div className="table-scroll">
           <table className="data-table">
@@ -178,10 +190,7 @@ export function SubtestList() {
       )}
 
       {importConflict && (
-        <ConfirmImportDialog
-          title={importConflict.subtest.title}
-          onResolve={resolveImport}
-        />
+        <ConfirmImportDialog title={importConflict.subtest.title} onResolve={resolveImport} />
       )}
     </div>
   );
@@ -200,10 +209,10 @@ function SubtestRow({
   onExport: () => void;
   onDelete: () => void;
 }) {
-  const { data: conf } = useAsync<ConfState>(() => conformanceState(summary.subtest.id), [
-    summary.itemCount,
-    summary.unitCount,
-  ]);
+  const { data: conf } = useAsync<ConfState>(
+    () => conformanceState(summary.subtest.id),
+    [summary.itemCount, summary.unitCount],
+  );
   const s = summary.subtest;
   return (
     <tr>
@@ -211,9 +220,7 @@ function SubtestRow({
         <button className="link-btn" onClick={onOpen}>
           {s.title || '(제목 없음)'}
         </button>
-        <div className="muted" style={{ fontSize: '0.8rem' }}>
-          {s.target}
-        </div>
+        <div className="muted text-xs">{s.target}</div>
       </td>
       <td>{summary.unitCount}</td>
       <td>{summary.itemCount}</td>
@@ -221,11 +228,9 @@ function SubtestRow({
         <span className={`badge badge-${conf ?? 'warn'}`}>{conf ? CONF_LABEL[conf] : '…'}</span>
       </td>
       <td>{summary.resultCount}</td>
-      <td className="muted" style={{ fontSize: '0.8rem' }}>
-        {new Date(s.updatedAt).toLocaleDateString('ko-KR')}
-      </td>
+      <td className="muted text-xs">{new Date(s.updatedAt).toLocaleDateString('ko-KR')}</td>
       <td>
-        <div style={{ display: 'flex', gap: '0.3rem', flexWrap: 'wrap' }}>
+        <div className="row row-tight">
           <button className="btn btn-sm" onClick={onOpen}>
             편집
           </button>
@@ -281,7 +286,7 @@ function CreateDialog({
           <label htmlFor="st-target">대상</label>
           <input id="st-target" value={target} onChange={(e) => setTarget(e.target.value)} />
         </div>
-        <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
+        <div className="row row-end">
           <button type="button" className="btn" onClick={onCancel}>
             취소
           </button>
@@ -319,10 +324,10 @@ function DeleteDialog({
   }
   return (
     <Modal title="소검사 삭제" onClose={onCancel}>
-      <p style={{ whiteSpace: 'pre-line' }}>
+      <p className="dialog-message">
         {`'${title}'에는 응시 결과가 있습니다.\n결과 처리 방법을 선택하세요.`}
       </p>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginTop: '1rem' }}>
+      <div className="stack-sm mt">
         <button className="btn btn-danger" onClick={() => onChoice('delete_all')}>
           결과도 함께 삭제
         </button>
@@ -346,10 +351,10 @@ function ConfirmImportDialog({
 }) {
   return (
     <Modal title="가져오기: ID 충돌" onClose={() => onResolve('cancel')}>
-      <p style={{ whiteSpace: 'pre-line' }}>
+      <p className="dialog-message">
         {`'${title}'과(와) 같은 ID의 소검사가 이미 있습니다.\n어떻게 처리할까요?`}
       </p>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginTop: '1rem' }}>
+      <div className="stack-sm mt">
         <button className="btn btn-primary" onClick={() => onResolve('new_copy')}>
           새 사본으로 가져오기
         </button>

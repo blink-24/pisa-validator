@@ -19,7 +19,14 @@ async function loadChoices() {
   for (const s of summaries) {
     const b = await loadBundle(s.subtest.id);
     const activatable = b
-      ? !hasBlockingError(runConformance({ subtest: b.subtest, units: b.units, passages: b.passages, items: b.items }))
+      ? !hasBlockingError(
+          runConformance({
+            subtest: b.subtest,
+            units: b.units,
+            passages: b.passages,
+            items: b.items,
+          }),
+        )
       : false;
     choices.push({ id: s.subtest.id, title: s.subtest.title, activatable });
   }
@@ -61,47 +68,60 @@ export function ActiveSubtestScreen() {
   return (
     <div className="card">
       <h2>사용자 소검사 설정</h2>
-      <p className="muted">정합성 오류가 없는 소검사만 선택할 수 있습니다. 한 번에 하나만 활성화됩니다.</p>
+      <p className="muted">
+        정합성 오류가 없는 소검사만 선택할 수 있습니다. 한 번에 하나만 활성화됩니다.
+      </p>
 
       {activatable.length === 0 ? (
         <p className="notice notice-warn">활성화 가능한(오류 없는) 소검사가 없습니다.</p>
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginTop: '0.5rem' }}>
-          <label style={{ fontWeight: 400 }}>
+        <div className="choice-list mt" role="radiogroup" aria-label="학생에게 열 소검사">
+          <label className={!data.activeId ? 'choice-option is-checked' : 'choice-option'}>
             <input
               type="radio"
               name="active"
               checked={!data.activeId}
               onChange={() => choose('')}
-              style={{ width: 'auto', marginRight: '0.5rem' }}
+              className="inline-control"
             />
-            (비활성 — 응시 불가)
+            <span className="grow">비활성</span>
+            <span className="form-hint">학생 화면에서 응시할 수 없음</span>
           </label>
           {activatable.map((c) => (
-            <label key={c.id} style={{ fontWeight: 400 }}>
+            <label
+              key={c.id}
+              className={data.activeId === c.id ? 'choice-option is-checked' : 'choice-option'}
+            >
               <input
                 type="radio"
                 name="active"
                 checked={data.activeId === c.id}
                 onChange={() => choose(c.id)}
-                style={{ width: 'auto', marginRight: '0.5rem' }}
+                className="inline-control"
               />
-              {c.title}
+              <span className="grow">{c.title}</span>
+              {data.activeId === c.id && <span className="badge badge-pass">응시 중</span>}
             </label>
           ))}
         </div>
       )}
 
       {data.choices.some((c) => !c.activatable) && (
-        <p className="muted" style={{ marginTop: '1rem', fontSize: '0.85rem' }}>
-          활성화할 수 없는 소검사: {data.choices.filter((c) => !c.activatable).map((c) => c.title).join(', ')}
+        <p className="muted mt text-sm">
+          활성화할 수 없는 소검사:{' '}
+          {data.choices
+            .filter((c) => !c.activatable)
+            .map((c) => c.title)
+            .join(', ')}
         </p>
       )}
 
       {pending && (
         <ConfirmDialog
           title="활성 소검사 변경"
-          message={'현재 활성 소검사에 진행 중인 응시 세션이 있습니다.\n변경하면 학생이 이어서 응시할 수 없게 될 수 있습니다. 계속할까요?'}
+          message={
+            '현재 활성 소검사에 진행 중인 응시 세션이 있습니다.\n변경하면 학생이 이어서 응시할 수 없게 될 수 있습니다. 계속할까요?'
+          }
           confirmLabel="변경"
           danger
           onConfirm={confirmSwitch}

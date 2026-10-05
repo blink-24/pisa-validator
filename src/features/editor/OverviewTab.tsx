@@ -37,7 +37,11 @@ export function OverviewTab({ subtest, onSaved }: { subtest: Subtest; onSaved: (
       <div className="field-row">
         <div className="field">
           <label htmlFor="ov-target">대상</label>
-          <input id="ov-target" value={draft.target} onChange={(e) => set('target', e.target.value)} />
+          <input
+            id="ov-target"
+            value={draft.target}
+            onChange={(e) => set('target', e.target.value)}
+          />
         </div>
         <div className="field">
           <label htmlFor="ov-structure">구조</label>
@@ -57,13 +61,13 @@ export function OverviewTab({ subtest, onSaved }: { subtest: Subtest; onSaved: (
             type="checkbox"
             checked={draft.allowWithinUnitNav}
             onChange={(e) => set('allowWithinUnitNav', e.target.checked)}
-            style={{ width: 'auto', marginRight: '0.5rem' }}
+            className="inline-control"
           />
           같은 단위문항 안에서 문항 간 이동 허용 (Req 6.8)
         </label>
       </div>
 
-      <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+      <div className="row">
         <button className="btn btn-primary" onClick={save}>
           저장
         </button>

@@ -23,19 +23,32 @@ export default function App() {
 
   return (
     <div className="app-shell">
+      {/* HashRouter라 #앵커 대신 포커스를 직접 옮긴다 */}
+      <button
+        type="button"
+        className="skip-link"
+        onClick={() => document.getElementById('main-content')?.focus()}
+      >
+        본문으로 건너뛰기
+      </button>
       <header className="app-header">
-        <h1 className="app-title">PISA형 문항 검증 플랫폼</h1>
-        <button
-          className="gear-btn"
-          onClick={onGear}
-          aria-label="관리자 진입"
-          title="관리자 진입"
-        >
+        <div className="app-brand">
+          <span className="brand-mark" aria-hidden="true">
+            <span />
+            <span />
+            <span />
+            <span />
+          </span>
+          <h1 className="app-title">
+            PISA형 문항 검증 플랫폼<small>시나리오 기반 읽기 평가</small>
+          </h1>
+        </div>
+        <button className="gear-btn" onClick={onGear} aria-label="관리자 진입" title="관리자 진입">
           <span aria-hidden="true">⚙</span>
         </button>
       </header>
 
-      <main className="app-main">
+      <main className="app-main" id="main-content" tabIndex={-1}>
         <Routes>
           <Route path="/" element={<IntroScreen />} />
           <Route path="/test" element={<TestScreen />} />

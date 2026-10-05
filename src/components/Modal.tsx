@@ -39,14 +39,8 @@ export function Modal({ title, onClose, children }: ModalProps) {
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div
-        className="modal"
-        role="dialog"
-        aria-modal="true"
-        aria-label={title}
-        ref={ref}
-      >
-        <h2 style={{ fontSize: '1.1rem' }}>{title}</h2>
+      <div className="modal" role="dialog" aria-modal="true" aria-label={title} ref={ref}>
+        <h2 className="modal-title">{title}</h2>
         {children}
       </div>
     </div>

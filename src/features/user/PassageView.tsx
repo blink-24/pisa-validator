@@ -2,7 +2,12 @@
 
 import { useState } from 'react';
 import { AssetImage } from '../../components/AssetImage';
-import { situationLabel, textFormatLabel, textTypeLabel, organizationLabel } from '../../data/taxonomy';
+import {
+  situationLabel,
+  textFormatLabel,
+  textTypeLabel,
+  organizationLabel,
+} from '../../data/taxonomy';
 import type { Passage } from '../../types';
 
 export function PassageView({ passages }: { passages: Passage[] }) {
@@ -42,9 +47,9 @@ export function PassageView({ passages }: { passages: Passage[] }) {
 function PassageBody({ passage }: { passage: Passage }) {
   return (
     <article>
-      {passage.title && <h3>{passage.title}</h3>}
+      {passage.title && <h3 className="passage-title">{passage.title}</h3>}
       {passage.imageIds.map((id) => (
-        <div key={id} style={{ margin: '0.5rem 0' }}>
+        <div key={id} className="passage-figure">
           <AssetImage assetId={id} alt={passage.title || '지문 이미지'} />
         </div>
       ))}
@@ -52,7 +57,7 @@ function PassageBody({ passage }: { passage: Passage }) {
         className="passage-body"
         dangerouslySetInnerHTML={{ __html: passage.bodyHtml || '<p class="muted">(본문 없음)</p>' }}
       />
-      <p className="muted" style={{ fontSize: '0.75rem', marginTop: '0.75rem' }}>
+      <p className="passage-meta">
         {[
           situationLabel(passage.situation),
           textFormatLabel(passage.textFormat),
@@ -69,11 +74,9 @@ function PassageBody({ passage }: { passage: Passage }) {
 
 function renderSource(p: Passage) {
   const s = p.source;
-  const parts = [s.author, s.work, s.publisher, s.year, s.pages ? `${s.pages}쪽` : ''].filter(Boolean);
-  if (parts.length === 0) return null;
-  return (
-    <p className="muted" style={{ fontSize: '0.75rem' }}>
-      출처: {parts.join(', ')}
-    </p>
+  const parts = [s.author, s.work, s.publisher, s.year, s.pages ? `${s.pages}쪽` : ''].filter(
+    Boolean,
   );
+  if (parts.length === 0) return null;
+  return <p className="passage-meta">출처: {parts.join(', ')}</p>;
 }

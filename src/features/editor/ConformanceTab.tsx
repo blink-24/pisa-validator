@@ -51,9 +51,7 @@ export function ConformanceTab({
                   <span className={`badge badge-${r.level}`}>{LEVEL_LABEL[r.level]}</span>
                 </td>
                 <td>{r.itemIds.length ? r.itemIds.join(', ') : '-'}</td>
-                <td className="muted" style={{ fontSize: '0.8rem' }}>
-                  {r.basis}
-                </td>
+                <td className="muted text-xs">{r.basis}</td>
               </tr>
             ))}
           </tbody>

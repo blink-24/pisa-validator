@@ -21,7 +21,10 @@ export function RoutingTab({
     setSaved(false);
   }
   function setFirstCut(patch: Partial<Subtest['routing']['firstCut']>) {
-    setDraft((d) => ({ ...d, routing: { ...d.routing, firstCut: { ...d.routing.firstCut, ...patch } } }));
+    setDraft((d) => ({
+      ...d,
+      routing: { ...d.routing, firstCut: { ...d.routing.firstCut, ...patch } },
+    }));
     setSaved(false);
   }
 
@@ -57,7 +60,7 @@ export function RoutingTab({
             name="assign"
             checked={draft.routing.assign === 'deterministic'}
             onChange={() => setRouting({ assign: 'deterministic' })}
-            style={{ width: 'auto', marginRight: '0.4rem' }}
+            className="inline-control"
           />
           결정형 (상→상 묶음, 하→하 묶음, 중→지정 묶음)
         </label>
@@ -67,7 +70,7 @@ export function RoutingTab({
             name="assign"
             checked={draft.routing.assign === 'pisa_probabilistic'}
             onChange={() => setRouting({ assign: 'pisa_probabilistic' })}
-            style={{ width: 'auto', marginRight: '0.4rem' }}
+            className="inline-control"
           />
           PISA 확률형 (상 90%/10%, 하 90%/10%, 중 50%/50%)
         </label>
@@ -186,7 +189,7 @@ function RoutingGraph({ items }: { subtest: Subtest; items: Item[] }) {
 
 function SaveBar({ onSave, saved }: { onSave: () => void; saved: boolean }) {
   return (
-    <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', marginTop: '1rem' }}>
+    <div className="row mt">
       <button className="btn btn-primary" onClick={onSave}>
         저장
       </button>

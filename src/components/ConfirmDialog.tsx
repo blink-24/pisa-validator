@@ -22,8 +22,8 @@ export function ConfirmDialog({
 }: ConfirmDialogProps) {
   return (
     <Modal title={title} onClose={onCancel}>
-      <p style={{ whiteSpace: 'pre-line' }}>{message}</p>
-      <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end', marginTop: '1rem' }}>
+      <p className="dialog-message">{message}</p>
+      <div className="dialog-actions">
         <button className="btn" onClick={onCancel}>
           {cancelLabel}
         </button>

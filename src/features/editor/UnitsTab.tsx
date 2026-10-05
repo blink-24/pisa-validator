@@ -104,9 +104,9 @@ function UnitCard({
         />
       </div>
 
-      <div className="card-header" style={{ marginTop: '1rem' }}>
+      <div className="card-header mt">
         <strong>지문 ({passages.length})</strong>
-        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+        <div className="row">
           {multiSource && <span className="badge badge-pass">텍스트 출처: 다중 (자동)</span>}
           <button
             className="btn btn-sm"
@@ -200,7 +200,10 @@ function PassageEditor({
       </div>
 
       <div className="field">
-        <label>본문 (허용 서식: &lt;p&gt; &lt;strong&gt; &lt;em&gt; &lt;ul/ol/li&gt; &lt;table&gt; &lt;h3/h4&gt;)</label>
+        <label>
+          본문 (허용 서식: &lt;p&gt; &lt;strong&gt; &lt;em&gt; &lt;ul/ol/li&gt; &lt;table&gt;
+          &lt;h3/h4&gt;)
+        </label>
         <textarea
           rows={6}
           value={draft.bodyHtml}
@@ -220,7 +223,7 @@ function PassageEditor({
             e.target.value = '';
           }}
         />
-        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginTop: '0.5rem' }}>
+        <div className="row mt-xs">
           {draft.imageIds.map((imgId) => (
             <div key={imgId} style={{ maxWidth: 160 }}>
               <AssetImage assetId={imgId} alt="지문 이미지" />
@@ -282,28 +285,48 @@ function PassageEditor({
         />
       </div>
 
-      <fieldset style={{ border: '1px solid var(--color-border)', borderRadius: 6, padding: '0.75rem' }}>
+      <fieldset className="box">
         <legend>출처 정보</legend>
         <div className="field-row">
           <div className="field">
             <label>저자</label>
-            <input value={draft.source.author ?? ''} onChange={(e) => setSource('author', e.target.value)} onBlur={() => save()} />
+            <input
+              value={draft.source.author ?? ''}
+              onChange={(e) => setSource('author', e.target.value)}
+              onBlur={() => save()}
+            />
           </div>
           <div className="field">
             <label>작품명</label>
-            <input value={draft.source.work ?? ''} onChange={(e) => setSource('work', e.target.value)} onBlur={() => save()} />
+            <input
+              value={draft.source.work ?? ''}
+              onChange={(e) => setSource('work', e.target.value)}
+              onBlur={() => save()}
+            />
           </div>
           <div className="field">
             <label>발행처</label>
-            <input value={draft.source.publisher ?? ''} onChange={(e) => setSource('publisher', e.target.value)} onBlur={() => save()} />
+            <input
+              value={draft.source.publisher ?? ''}
+              onChange={(e) => setSource('publisher', e.target.value)}
+              onBlur={() => save()}
+            />
           </div>
           <div className="field">
             <label>연도</label>
-            <input value={draft.source.year ?? ''} onChange={(e) => setSource('year', e.target.value)} onBlur={() => save()} />
+            <input
+              value={draft.source.year ?? ''}
+              onChange={(e) => setSource('year', e.target.value)}
+              onBlur={() => save()}
+            />
           </div>
           <div className="field">
             <label>쪽</label>
-            <input value={draft.source.pages ?? ''} onChange={(e) => setSource('pages', e.target.value)} onBlur={() => save()} />
+            <input
+              value={draft.source.pages ?? ''}
+              onChange={(e) => setSource('pages', e.target.value)}
+              onBlur={() => save()}
+            />
           </div>
         </div>
       </fieldset>

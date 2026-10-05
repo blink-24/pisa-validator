@@ -69,46 +69,50 @@ export function ReportWizard() {
 
       <div className="field">
         <label>형식</label>
-        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-          <label style={{ fontWeight: 400 }}>
+        <div className="row row-loose">
+          <label className="fw-normal">
             <input
               type="radio"
               name="fmt"
               checked={format === 'pdf'}
               onChange={() => setFormat('pdf')}
-              style={{ width: 'auto', marginRight: '0.4rem' }}
+              className="inline-control"
             />
             PDF (A4 세로, 인쇄 대화상자에서 'PDF로 저장')
           </label>
-          <label style={{ fontWeight: 400 }}>
+          <label className="fw-normal">
             <input
               type="radio"
               name="fmt"
               checked={format === 'html'}
               onChange={() => setFormat('html')}
-              style={{ width: 'auto', marginRight: '0.4rem' }}
+              className="inline-control"
             />
             HTML (보관·재인쇄용)
           </label>
         </div>
       </div>
 
-      <p className="notice" style={{ fontSize: '0.85rem' }}>
-        HWPX 출력은 한글에서 만든 스타일 템플릿(<code>report-template.hwpx</code>)이 필요하며(설계 Task
-        12.3) 현재 환경에 템플릿이 없어 비활성화되어 있습니다. 당장은 PDF/HTML을 사용하세요. PDF는
-        A4 세로로 구성되며 표는 행 단위로 페이지가 나뉩니다.
+      <p className="notice text-sm">
+        HWPX 출력은 한글에서 만든 스타일 템플릿(<code>report-template.hwpx</code>)이 필요하며(설계
+        Task 12.3) 현재 환경에 템플릿이 없어 비활성화되어 있습니다. 당장은 PDF/HTML을 사용하세요.
+        PDF는 A4 세로로 구성되며 표는 행 단위로 페이지가 나뉩니다.
       </p>
 
-      <button className="btn btn-primary" onClick={generate} disabled={!subtestId || step === 'model' || step === 'render'}>
+      <button
+        className="btn btn-primary"
+        onClick={generate}
+        disabled={!subtestId || step === 'model' || step === 'render'}
+      >
         보고서 생성
       </button>
 
       {step !== 'idle' && (
-        <div style={{ marginTop: '1rem' }}>
+        <div className="mt">
           <div className="progressbar" aria-label="진행률">
             <span style={{ width: `${progress}%` }} />
           </div>
-          <p className="muted" style={{ fontSize: '0.85rem' }}>
+          <p className="muted text-sm">
             단계: {STEP_LABEL[step]}
             {step === 'done' && ' — 새 창의 인쇄 대화상자에서 저장하세요.'}
           </p>

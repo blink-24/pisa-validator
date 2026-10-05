@@ -38,17 +38,13 @@ export function PasswordDialog({ onSuccess, onCancel }: PasswordDialogProps) {
             }}
           />
           {error && (
-            <span role="alert" style={{ color: 'var(--color-danger)', fontSize: '0.9rem' }}>
-              비밀번호가 올바르지 않습니다
+            <span role="alert" className="form-error">
+              비밀번호가 올바르지 않습니다. 다시 입력하세요.
             </span>
           )}
         </div>
-        <p className="muted" style={{ fontSize: '0.8rem' }}>
-          이 잠금은 오조작 방지용이며 보안 기능이 아닙니다.
-        </p>
-        <div
-          style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end', marginTop: '0.5rem' }}
-        >
+        <p className="form-hint flush">이 잠금은 오조작 방지용이며 보안 기능이 아닙니다.</p>
+        <div className="dialog-actions">
           <button type="button" className="btn" onClick={onCancel}>
             취소
           </button>

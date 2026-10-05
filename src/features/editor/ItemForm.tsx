@@ -12,7 +12,14 @@ import {
 } from '../../data/taxonomy';
 import { uid } from '../../core/ids';
 import { updateItem, itemIdExists } from '../../data/editorRepo';
-import type { Item, ResponseFormat, Choice, ComplexMatrix, CodingCriterion, CodingValue } from '../../types';
+import type {
+  Item,
+  ResponseFormat,
+  Choice,
+  ComplexMatrix,
+  CodingCriterion,
+  CodingValue,
+} from '../../types';
 
 export function ItemForm({ item, onSaved }: { item: Item; onSaved: () => void }) {
   const [draft, setDraft] = useState<Item>(normalize(item));
@@ -32,7 +39,12 @@ export function ItemForm({ item, onSaved }: { item: Item; onSaved: () => void })
   async function save() {
     setIdError(null);
     // 필수 4속성 검증 (Req 4.1)
-    if (!draft.cognitiveProcess || !draft.responseFormat || !draft.sourceRequirement || !draft.difficulty) {
+    if (
+      !draft.cognitiveProcess ||
+      !draft.responseFormat ||
+      !draft.sourceRequirement ||
+      !draft.difficulty
+    ) {
       setIdError('인지 과정·응답 형식·출처 요구·난도는 필수입니다.');
       return;
     }
@@ -69,7 +81,10 @@ export function ItemForm({ item, onSaved }: { item: Item; onSaved: () => void })
       </div>
 
       <div className="field-row">
-        <CognitiveProcessSelect value={draft.cognitiveProcess} onChange={(c) => set('cognitiveProcess', c)} />
+        <CognitiveProcessSelect
+          value={draft.cognitiveProcess}
+          onChange={(c) => set('cognitiveProcess', c)}
+        />
         <TaxSelect
           label="응답 형식"
           required
@@ -95,8 +110,12 @@ export function ItemForm({ item, onSaved }: { item: Item; onSaved: () => void })
 
       {/* 형식별 입력 UI */}
       {draft.responseFormat === 'simple_mc' && <SimpleMcEditor draft={draft} setDraft={setDraft} />}
-      {draft.responseFormat === 'complex_mc' && <ComplexMcEditor draft={draft} setDraft={setDraft} />}
-      {draft.responseFormat === 'short_auto' && <ShortAutoEditor draft={draft} setDraft={setDraft} />}
+      {draft.responseFormat === 'complex_mc' && (
+        <ComplexMcEditor draft={draft} setDraft={setDraft} />
+      )}
+      {draft.responseFormat === 'short_auto' && (
+        <ShortAutoEditor draft={draft} setDraft={setDraft} />
+      )}
       {draft.responseFormat === 'open_human' && <CodingEditor draft={draft} setDraft={setDraft} />}
 
       {/* 해설 */}
@@ -110,7 +129,7 @@ export function ItemForm({ item, onSaved }: { item: Item; onSaved: () => void })
       </div>
 
       {/* 선택 속성 */}
-      <fieldset style={{ border: '1px solid var(--color-border)', borderRadius: 6, padding: '0.75rem' }}>
+      <fieldset className="box">
         <legend>선택 속성</legend>
         <div className="field-row">
           <div className="field">
@@ -137,15 +156,15 @@ export function ItemForm({ item, onSaved }: { item: Item; onSaved: () => void })
         </div>
         <div className="field">
           <label>검증용 태그</label>
-          <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+          <div className="row row-loose">
             {itemTagOptions.map((t) => {
               const checked = (draft.tags ?? []).includes(t.code);
               return (
-                <label key={t.code} style={{ fontWeight: 400 }}>
+                <label key={t.code} className="fw-normal">
                   <input
                     type="checkbox"
                     checked={checked}
-                    style={{ width: 'auto', marginRight: '0.3rem' }}
+                    className="inline-control"
                     onChange={(e) => {
                       const tags = new Set(draft.tags ?? []);
                       if (e.target.checked) tags.add(t.code);
@@ -167,7 +186,7 @@ export function ItemForm({ item, onSaved }: { item: Item; onSaved: () => void })
           {idError}
         </p>
       )}
-      <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', marginTop: '0.5rem' }}>
+      <div className="row mt-xs">
         <button className="btn btn-primary" onClick={save}>
           문항 저장
         </button>
@@ -217,31 +236,39 @@ function normalize(item: Item): Item {
 }
 
 // ---- simple_mc ----
-function SimpleMcEditor({ draft, setDraft }: { draft: Item; setDraft: React.Dispatch<React.SetStateAction<Item>> }) {
+function SimpleMcEditor({
+  draft,
+  setDraft,
+}: {
+  draft: Item;
+  setDraft: React.Dispatch<React.SetStateAction<Item>>;
+}) {
   const choices = draft.choices ?? [];
   function update(choices: Choice[], answer?: string) {
     setDraft((d) => ({ ...d, choices, ...(answer !== undefined ? { answer } : {}) }));
   }
   return (
-    <fieldset style={{ border: '1px solid var(--color-border)', borderRadius: 6, padding: '0.75rem' }}>
+    <fieldset className="box">
       <legend>단순선다형 (선택지 2~6개, 정답 1개)</legend>
       {choices.map((c, i) => (
-        <div key={c.id} className="inline-fields" style={{ marginBottom: '0.4rem' }}>
-          <label style={{ fontWeight: 400 }}>
+        <div key={c.id} className="inline-fields mb-xs">
+          <label className="fw-normal">
             <input
               type="radio"
               name={`ans-${draft.id}`}
               checked={draft.answer === c.id}
               onChange={() => update(choices, c.id)}
-              style={{ width: 'auto', marginRight: '0.3rem' }}
+              className="inline-control"
             />
             정답
           </label>
           <input
-            style={{ flex: 1, minWidth: 180 }}
+            className="grow"
             placeholder={`보기 ${i + 1}`}
             value={c.text}
-            onChange={(e) => update(choices.map((x) => (x.id === c.id ? { ...x, text: e.target.value } : x)))}
+            onChange={(e) =>
+              update(choices.map((x) => (x.id === c.id ? { ...x, text: e.target.value } : x)))
+            }
           />
           <button
             className="btn btn-sm btn-danger"
@@ -264,35 +291,59 @@ function SimpleMcEditor({ draft, setDraft }: { draft: Item; setDraft: React.Disp
 }
 
 // ---- complex_mc ----
-function ComplexMcEditor({ draft, setDraft }: { draft: Item; setDraft: React.Dispatch<React.SetStateAction<Item>> }) {
+function ComplexMcEditor({
+  draft,
+  setDraft,
+}: {
+  draft: Item;
+  setDraft: React.Dispatch<React.SetStateAction<Item>>;
+}) {
   const matrix = draft.matrix!;
   function setMatrix(next: ComplexMatrix) {
     setDraft((d) => ({ ...d, matrix: next }));
   }
   return (
-    <fieldset style={{ border: '1px solid var(--color-border)', borderRadius: 6, padding: '0.75rem' }}>
+    <fieldset className="box">
       <legend>복합선다형 (진술 × 선택 열)</legend>
       <div className="field">
         <label>선택 열 (쉼표로 구분)</label>
         <input
           value={matrix.cols.join(', ')}
-          onChange={(e) => setMatrix({ ...matrix, cols: e.target.value.split(',').map((s) => s.trim()).filter(Boolean) })}
+          onChange={(e) =>
+            setMatrix({
+              ...matrix,
+              cols: e.target.value
+                .split(',')
+                .map((s) => s.trim())
+                .filter(Boolean),
+            })
+          }
         />
       </div>
       {matrix.rows.map((row) => (
-        <div key={row.id} className="inline-fields" style={{ marginBottom: '0.4rem' }}>
+        <div key={row.id} className="inline-fields mb-xs">
           <input
             style={{ flex: 1, minWidth: 160 }}
             placeholder="진술"
             value={row.text}
             onChange={(e) =>
-              setMatrix({ ...matrix, rows: matrix.rows.map((r) => (r.id === row.id ? { ...r, text: e.target.value } : r)) })
+              setMatrix({
+                ...matrix,
+                rows: matrix.rows.map((r) =>
+                  r.id === row.id ? { ...r, text: e.target.value } : r,
+                ),
+              })
             }
           />
           <select
             value={row.answer}
             onChange={(e) =>
-              setMatrix({ ...matrix, rows: matrix.rows.map((r) => (r.id === row.id ? { ...r, answer: e.target.value } : r)) })
+              setMatrix({
+                ...matrix,
+                rows: matrix.rows.map((r) =>
+                  r.id === row.id ? { ...r, answer: e.target.value } : r,
+                ),
+              })
             }
           >
             <option value="">정답 열</option>
@@ -305,7 +356,9 @@ function ComplexMcEditor({ draft, setDraft }: { draft: Item; setDraft: React.Dis
           <button
             className="btn btn-sm btn-danger"
             disabled={matrix.rows.length <= 1}
-            onClick={() => setMatrix({ ...matrix, rows: matrix.rows.filter((r) => r.id !== row.id) })}
+            onClick={() =>
+              setMatrix({ ...matrix, rows: matrix.rows.filter((r) => r.id !== row.id) })
+            }
           >
             삭제
           </button>
@@ -314,7 +367,9 @@ function ComplexMcEditor({ draft, setDraft }: { draft: Item; setDraft: React.Dis
       <div className="inline-fields">
         <button
           className="btn btn-sm"
-          onClick={() => setMatrix({ ...matrix, rows: [...matrix.rows, { id: uid('r'), text: '', answer: '' }] })}
+          onClick={() =>
+            setMatrix({ ...matrix, rows: [...matrix.rows, { id: uid('r'), text: '', answer: '' }] })
+          }
         >
           진술 추가
         </button>
@@ -323,7 +378,10 @@ function ComplexMcEditor({ draft, setDraft }: { draft: Item; setDraft: React.Dis
           <select
             value={matrix.fullCredit === 'all' ? 'all' : String(matrix.fullCredit)}
             onChange={(e) =>
-              setMatrix({ ...matrix, fullCredit: e.target.value === 'all' ? 'all' : Number(e.target.value) })
+              setMatrix({
+                ...matrix,
+                fullCredit: e.target.value === 'all' ? 'all' : Number(e.target.value),
+              })
             }
           >
             <option value="all">전부 정답</option>
@@ -340,19 +398,25 @@ function ComplexMcEditor({ draft, setDraft }: { draft: Item; setDraft: React.Dis
 }
 
 // ---- short_auto ----
-function ShortAutoEditor({ draft, setDraft }: { draft: Item; setDraft: React.Dispatch<React.SetStateAction<Item>> }) {
+function ShortAutoEditor({
+  draft,
+  setDraft,
+}: {
+  draft: Item;
+  setDraft: React.Dispatch<React.SetStateAction<Item>>;
+}) {
   const answers = draft.acceptedAnswers ?? [''];
   const norm = draft.normalize ?? { ignoreSpace: true, ignoreCase: true };
   function setAnswers(next: string[]) {
     setDraft((d) => ({ ...d, acceptedAnswers: next }));
   }
   return (
-    <fieldset style={{ border: '1px solid var(--color-border)', borderRadius: 6, padding: '0.75rem' }}>
+    <fieldset className="box">
       <legend>구성형(자동 채점·단답 일치)</legend>
       {answers.map((a, i) => (
-        <div key={i} className="inline-fields" style={{ marginBottom: '0.4rem' }}>
+        <div key={i} className="inline-fields mb-xs">
           <input
-            style={{ flex: 1, minWidth: 180 }}
+            className="grow"
             placeholder="허용 정답"
             value={a}
             onChange={(e) => setAnswers(answers.map((x, j) => (j === i ? e.target.value : x)))}
@@ -370,21 +434,25 @@ function ShortAutoEditor({ draft, setDraft }: { draft: Item; setDraft: React.Dis
         <button className="btn btn-sm" onClick={() => setAnswers([...answers, ''])}>
           정답 추가
         </button>
-        <label style={{ fontWeight: 400 }}>
+        <label className="fw-normal">
           <input
             type="checkbox"
             checked={norm.ignoreSpace}
-            style={{ width: 'auto', marginRight: '0.3rem' }}
-            onChange={(e) => setDraft((d) => ({ ...d, normalize: { ...norm, ignoreSpace: e.target.checked } }))}
+            className="inline-control"
+            onChange={(e) =>
+              setDraft((d) => ({ ...d, normalize: { ...norm, ignoreSpace: e.target.checked } }))
+            }
           />
           공백 무시
         </label>
-        <label style={{ fontWeight: 400 }}>
+        <label className="fw-normal">
           <input
             type="checkbox"
             checked={norm.ignoreCase}
-            style={{ width: 'auto', marginRight: '0.3rem' }}
-            onChange={(e) => setDraft((d) => ({ ...d, normalize: { ...norm, ignoreCase: e.target.checked } }))}
+            className="inline-control"
+            onChange={(e) =>
+              setDraft((d) => ({ ...d, normalize: { ...norm, ignoreCase: e.target.checked } }))
+            }
           />
           대소문자 무시
         </label>
@@ -394,7 +462,13 @@ function ShortAutoEditor({ draft, setDraft }: { draft: Item; setDraft: React.Dis
 }
 
 // ---- open_human coding ----
-function CodingEditor({ draft, setDraft }: { draft: Item; setDraft: React.Dispatch<React.SetStateAction<Item>> }) {
+function CodingEditor({
+  draft,
+  setDraft,
+}: {
+  draft: Item;
+  setDraft: React.Dispatch<React.SetStateAction<Item>>;
+}) {
   const coding = draft.coding ?? [];
   function setCode(code: CodingValue, patch: Partial<CodingCriterion>) {
     setDraft((d) => ({
@@ -403,12 +477,20 @@ function CodingEditor({ draft, setDraft }: { draft: Item; setDraft: React.Dispat
     }));
   }
   return (
-    <fieldset style={{ border: '1px solid var(--color-border)', borderRadius: 6, padding: '0.75rem' }}>
+    <fieldset className="box">
       <legend>채점 기준 (Code 2/1/0/9, 예시 답안)</legend>
       {codingOptions.map((co) => {
-        const entry = coding.find((c) => c.code === co.code) ?? { code: co.code as CodingValue, criterion: '', examples: [] };
+        const entry = coding.find((c) => c.code === co.code) ?? {
+          code: co.code as CodingValue,
+          criterion: '',
+          examples: [],
+        };
         return (
-          <div key={co.code} className="card" style={{ background: 'var(--color-surface)', padding: '0.6rem' }}>
+          <div
+            key={co.code}
+            className="card"
+            style={{ background: 'var(--color-surface)', padding: '0.6rem' }}
+          >
             <strong>{co.label}</strong>
             <div className="field">
               <label>기준 문장</label>
@@ -424,7 +506,9 @@ function CodingEditor({ draft, setDraft }: { draft: Item; setDraft: React.Dispat
                 rows={2}
                 value={entry.examples.join('\n')}
                 onChange={(e) =>
-                  setCode(co.code as CodingValue, { examples: e.target.value.split('\n').filter((s) => s.trim()) })
+                  setCode(co.code as CodingValue, {
+                    examples: e.target.value.split('\n').filter((s) => s.trim()),
+                  })
                 }
               />
             </div>

@@ -7,10 +7,6 @@ import { CodingQueue } from '../coding/CodingQueue';
 import { PilotScreen } from '../pilot/PilotScreen';
 import { ReportWizard } from '../report/ReportWizard';
 
-function navCls({ isActive }: { isActive: boolean }): string {
-  return isActive ? 'btn btn-primary' : 'btn';
-}
-
 /** 관리자 영역 레이아웃 + 하위 라우트. */
 export function AdminHome() {
   const navigate = useNavigate();
@@ -24,24 +20,24 @@ export function AdminHome() {
     <section>
       <div className="admin-bar">
         <nav className="admin-nav" aria-label="관리자 메뉴">
-          <NavLink end className={navCls} to="/admin">
+          <NavLink end className="admin-tab" to="/admin">
             소검사 목록
           </NavLink>
-          <NavLink className={navCls} to="/admin/active">
+          <NavLink className="admin-tab" to="/admin/active">
             사용자 소검사 설정
           </NavLink>
-          <NavLink className={navCls} to="/admin/coding">
+          <NavLink className="admin-tab" to="/admin/coding">
             채점
           </NavLink>
-          <NavLink className={navCls} to="/admin/pilot">
+          <NavLink className="admin-tab" to="/admin/pilot">
             파일럿·통계
           </NavLink>
-          <NavLink className={navCls} to="/admin/report">
+          <NavLink className="admin-tab" to="/admin/report">
             보고서 작성
           </NavLink>
         </nav>
-        <button className="btn" onClick={leave}>
-          나가기
+        <button className="btn btn-sm" onClick={leave}>
+          관리자 나가기
         </button>
       </div>
 
@@ -55,10 +51,8 @@ export function AdminHome() {
         <Route path="*" element={<Navigate to="/admin" replace />} />
       </Routes>
 
-      <footer style={{ marginTop: '3rem' }}>
-        <p className="muted" style={{ fontSize: '0.85rem' }}>
-          이 잠금은 오조작 방지용이며 보안 기능이 아닙니다.
-        </p>
+      <footer className="admin-footer">
+        <p className="form-hint flush">이 잠금은 오조작 방지용이며 보안 기능이 아닙니다.</p>
       </footer>
     </section>
   );

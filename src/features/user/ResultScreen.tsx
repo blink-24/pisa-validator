@@ -95,33 +95,32 @@ export function ResultScreen() {
   const grade = r.grade as Grade;
 
   return (
-    <section>
-      <div className="card">
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
+    <section className="result">
+      <p className="eyebrow">응시 결과</p>
+      <div className="card result-card">
+        <div className="grade-row">
           <span className={`grade-badge grade-${grade}`} aria-hidden="true">
             {gradeLabel(grade)}
           </span>
           <div>
-            <h2 style={{ margin: 0 }}>
+            <h2>
               '{gradeLabel(grade)}' 등급{r.provisional ? ' (잠정)' : ''}
             </h2>
-            {r.provisional && (
-              <p className="muted" style={{ margin: 0 }}>
-                서술형 채점 후 확정됩니다.
-              </p>
-            )}
+            {r.provisional && <p className="muted text-sm">서술형 채점 후 확정됩니다.</p>}
           </div>
         </div>
 
         <div className="explanation">{r.explanation}</div>
       </div>
 
-      <button className="btn btn-primary" onClick={closeResult}>
-        결과 닫기
-      </button>
-      <p className="muted" style={{ fontSize: '0.8rem', marginTop: '0.5rem' }}>
-        닫으면 이 결과를 다시 열 수 없습니다. 다음 응시자에게 넘겨주세요.
-      </p>
+      <div className="row">
+        <button className="btn btn-primary btn-lg" onClick={closeResult}>
+          결과 닫기
+        </button>
+        <p className="form-hint flush">
+          닫으면 이 결과를 다시 열 수 없습니다. 다음 응시자에게 넘겨주세요.
+        </p>
+      </div>
     </section>
   );
 }

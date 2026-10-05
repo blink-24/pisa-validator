@@ -21,7 +21,7 @@ export function AnonCodeForm({ onSubmit }: { onSubmit: (code: string) => void })
   }
 
   return (
-    <form onSubmit={submit} style={{ maxWidth: 420 }}>
+    <form onSubmit={submit} className="anon-form">
       <div className="field">
         <label htmlFor="anon-code">익명 응시 코드</label>
         <input
@@ -29,18 +29,20 @@ export function AnonCodeForm({ onSubmit }: { onSubmit: (code: string) => void })
           value={code}
           onChange={(e) => change(e.target.value)}
           placeholder="예: A-07, 모둠3-2"
+          aria-describedby="anon-code-hint"
+          autoComplete="off"
           autoFocus
         />
-        <span className="muted" style={{ fontSize: '0.85rem' }}>
+        <span id="anon-code-hint" className="form-hint">
           실명·학번을 쓰지 마세요.
         </span>
         {nameWarn && (
-          <span role="alert" style={{ color: 'var(--color-warn)', fontSize: '0.85rem' }}>
+          <span role="alert" className="form-warn">
             실명으로 보입니다. 익명 코드를 사용하세요.
           </span>
         )}
       </div>
-      <button type="submit" className="btn btn-primary" disabled={!code.trim()}>
+      <button type="submit" className="btn btn-primary btn-lg" disabled={!code.trim()}>
         시작
       </button>
     </form>

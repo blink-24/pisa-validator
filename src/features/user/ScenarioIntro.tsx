@@ -12,19 +12,19 @@ export function ScenarioIntro({
   onContinue: () => void;
 }) {
   return (
-    <section>
-      <div className="muted" style={{ marginBottom: '0.5rem' }}>
+    <section className="scenario">
+      <p className="eyebrow">
         {stageTitle} · 단위문항 {unit.unitNo}
-      </div>
-      <div className="card">
+      </p>
+      <div className="sheet">
         <h2>{unit.title || `단위문항 ${unit.unitNo}`}</h2>
         {unit.scenarioIntro ? (
-          <p style={{ whiteSpace: 'pre-line', lineHeight: 1.8 }}>{unit.scenarioIntro}</p>
+          <p className="scenario-text">{unit.scenarioIntro}</p>
         ) : (
-          <p className="muted">(시나리오 도입문이 없습니다.)</p>
+          <p className="muted flush">(시나리오 도입문이 없습니다.)</p>
         )}
       </div>
-      <button className="btn btn-primary" onClick={onContinue}>
+      <button className="btn btn-primary btn-lg" onClick={onContinue}>
         지문·문항 보기
       </button>
     </section>

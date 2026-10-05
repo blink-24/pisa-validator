@@ -98,9 +98,7 @@ export function TestScreen() {
     if (!bundle || !plan) return [];
     const unitIds: string[] = [];
     for (const it of plan.items) if (!unitIds.includes(it.unitId)) unitIds.push(it.unitId);
-    return unitIds
-      .map((id) => bundle.units.find((u) => u.id === id))
-      .filter((u): u is Unit => !!u);
+    return unitIds.map((id) => bundle.units.find((u) => u.id === id)).filter((u): u is Unit => !!u);
   }, [bundle, plan]);
 
   const currentUnit = unitsInStage[unitCursor] ?? null;
@@ -177,11 +175,17 @@ export function TestScreen() {
   // 제출 확인만 남은 상태
   if (!plan) {
     return (
-      <div>
-        <p className="notice">모든 문항에 대한 응시가 끝났습니다.</p>
-        <button className="btn btn-primary" onClick={() => setConfirmSubmit(true)}>
-          제출하기
-        </button>
+      <div className="submit-panel sheet stack">
+        <div>
+          <p className="eyebrow">마지막 단계</p>
+          <h2>모든 문항에 대한 응시가 끝났습니다</h2>
+          <p className="muted flush">제출하면 답을 고칠 수 없습니다. 준비되면 제출하세요.</p>
+        </div>
+        <div>
+          <button className="btn btn-primary btn-lg" onClick={() => setConfirmSubmit(true)}>
+            제출하기
+          </button>
+        </div>
         {confirmSubmit && (
           <SubmitDialog
             unanswered={unansweredCount(bundle, session)}
@@ -213,40 +217,40 @@ export function TestScreen() {
 
   if (!currentUnit) {
     return (
-      <div>
+      <div className="submit-panel stack">
         <p className="notice">이 단계에는 문항이 없습니다.</p>
-        <button className="btn btn-primary" onClick={advanceStage}>
-          계속
-        </button>
+        <div>
+          <button className="btn btn-primary" onClick={advanceStage}>
+            계속
+          </button>
+        </div>
       </div>
     );
   }
 
   const passages = bundle.passages.filter((p) => currentUnit.passageIds.includes(p.id));
-  const answeredInUnit = currentUnitItems.filter((it) => answerFor(it.id) != null && answerFor(it.id) !== '').length;
-  const unitProgress = currentUnitItems.length ? (answeredInUnit / currentUnitItems.length) * 100 : 0;
+  const answeredInUnit = currentUnitItems.filter(
+    (it) => answerFor(it.id) != null && answerFor(it.id) !== '',
+  ).length;
+  const unitProgress = currentUnitItems.length
+    ? (answeredInUnit / currentUnitItems.length) * 100
+    : 0;
 
   return (
     <div>
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          gap: '0.5rem',
-          marginBottom: '0.5rem',
-          flexWrap: 'wrap',
-        }}
-      >
-        <div className="muted">
-          {stageTitle} · 단위문항 {currentUnit.unitNo} ({unitCursor + 1}/{unitsInStage.length})
+      <div className="stage-bar">
+        <div className="stage-label">
+          {stageTitle}
+          <span className="chip num">
+            단위문항 {currentUnit.unitNo} · {unitCursor + 1}/{unitsInStage.length}
+          </span>
         </div>
-        <div className="muted" style={{ fontSize: '0.85rem' }} aria-live="polite">
+        <div className="save-state" aria-live="polite">
           이 단위 응답 {answeredInUnit}/{currentUnitItems.length}
-          {justSaved && <span style={{ color: 'var(--color-ok)', marginLeft: '0.5rem' }}>자동 저장됨</span>}
+          {justSaved && <span className="saved">자동 저장됨</span>}
         </div>
       </div>
-      <div className="progressbar" style={{ marginBottom: '1rem' }} aria-hidden="true">
+      <div className="progressbar unit-progress" aria-hidden="true">
         <span style={{ width: `${unitProgress}%` }} />
       </div>
 
@@ -265,7 +269,7 @@ export function TestScreen() {
             />
           ))}
 
-          <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
+          <div className="item-actions">
             {bundle.subtest.allowWithinUnitNav && unitCursor > 0 && (
               <button
                 className="btn"

@@ -25,7 +25,12 @@ async function loadQueue(subtestId: string) {
       const item = itemsById.get(r.itemId);
       if (!item || item.responseFormat !== 'open_human') continue;
       if (r.humanCode != null) continue; // 이미 채점됨
-      pending.push({ session: s, item, answer: typeof r.answer === 'string' ? r.answer : '', index: idx + 1 });
+      pending.push({
+        session: s,
+        item,
+        answer: typeof r.answer === 'string' ? r.answer : '',
+        index: idx + 1,
+      });
     }
   });
   return { pending, itemsById };
@@ -38,7 +43,7 @@ export function CodingQueue() {
   return (
     <div>
       <h2>구성형 채점</h2>
-      <div className="field" style={{ maxWidth: 420 }}>
+      <div className="field w-narrow">
         <label>소검사 선택</label>
         <select value={subtestId} onChange={(e) => setSubtestId(e.target.value)}>
           <option value="">(선택)</option>
@@ -109,24 +114,27 @@ function CodingCard({
       </div>
       <div className="split-view">
         <div>
-          <div className="muted" style={{ fontSize: '0.85rem' }}>
-            학생 답안
-          </div>
-          <div className="card" style={{ background: 'var(--color-surface)', whiteSpace: 'pre-line' }}>
+          <div className="muted text-sm">학생 답안</div>
+          <div
+            className="card"
+            style={{ background: 'var(--color-surface)', whiteSpace: 'pre-line' }}
+          >
             {pa.answer || '(무응답)'}
           </div>
           <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap', marginTop: '0.5rem' }}>
             {([2, 1, 0, 9] as CodingValue[]).map((code) => (
-              <button key={code} className="btn btn-sm btn-primary" onClick={() => onAssign(pa, code)}>
+              <button
+                key={code}
+                className="btn btn-sm btn-primary"
+                onClick={() => onAssign(pa, code)}
+              >
                 {codingLabel(code)}
               </button>
             ))}
           </div>
         </div>
         <div>
-          <div className="muted" style={{ fontSize: '0.85rem' }}>
-            채점 기준·예시
-          </div>
+          <div className="muted text-sm">채점 기준·예시</div>
           {coding.length === 0 ? (
             <p className="muted">채점 기준이 없습니다.</p>
           ) : (

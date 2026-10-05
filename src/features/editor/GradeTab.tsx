@@ -40,9 +40,7 @@ export function GradeTab({ subtest, onSaved }: { subtest: Subtest; onSaved: () =
                 value={Math.round(draft.gradeRule.highBlockCut * 100)}
                 onChange={(e) => setRule({ highBlockCut: pct(e.target.value) })}
               />
-              <span className="muted" style={{ fontSize: '0.8rem' }}>
-                미만이면 '중'
-              </span>
+              <span className="muted text-xs">미만이면 '중'</span>
             </div>
             <div className="field">
               <label>하 묶음에서 '중' 판정 컷 (이상, %)</label>
@@ -53,14 +51,14 @@ export function GradeTab({ subtest, onSaved }: { subtest: Subtest; onSaved: () =
                 value={Math.round(draft.gradeRule.lowBlockCut * 100)}
                 onChange={(e) => setRule({ lowBlockCut: pct(e.target.value) })}
               />
-              <span className="muted" style={{ fontSize: '0.8rem' }}>
-                미만이면 '하'
-              </span>
+              <span className="muted text-xs">미만이면 '하'</span>
             </div>
           </div>
         </>
       ) : (
-        <p className="notice">단일 단계 구조에서는 1차 판정 컷(연결 규칙 탭)이 최종 등급 기준입니다.</p>
+        <p className="notice">
+          단일 단계 구조에서는 1차 판정 컷(연결 규칙 탭)이 최종 등급 기준입니다.
+        </p>
       )}
 
       <h3>등급별 설명문 (선택, Req 11.4)</h3>
@@ -77,7 +75,7 @@ export function GradeTab({ subtest, onSaved }: { subtest: Subtest; onSaved: () =
         <textarea rows={2} value={d.low ?? ''} onChange={(e) => setDesc('low', e.target.value)} />
       </div>
 
-      <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+      <div className="row">
         <button className="btn btn-primary" onClick={save}>
           저장
         </button>

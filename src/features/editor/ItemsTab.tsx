@@ -27,7 +27,9 @@ export function ItemsTab({
   return (
     <div>
       {units.map((unit) => {
-        const unitItems = items.filter((i) => i.unitId === unit.id).sort((a, b) => a.order - b.order);
+        const unitItems = items
+          .filter((i) => i.unitId === unit.id)
+          .sort((a, b) => a.order - b.order);
         return (
           <div className="card" key={unit.id}>
             <div className="card-header">
@@ -88,7 +90,7 @@ function AddItemButtons({
     );
   }
   return (
-    <div style={{ display: 'flex', gap: '0.3rem', flexWrap: 'wrap' }}>
+    <div className="row row-tight">
       <button className="btn btn-sm" onClick={() => onAdd('core', 'none')}>
         + 핵심
       </button>
@@ -135,7 +137,9 @@ function ItemRow({
   const incomplete = itemIncompleteReason(item);
 
   return (
-    <div style={{ border: '1px solid var(--color-border)', borderRadius: 6, marginBottom: '0.5rem' }}>
+    <div
+      style={{ border: '1px solid var(--color-border)', borderRadius: 6, marginBottom: '0.5rem' }}
+    >
       <div
         className="card-header"
         style={{ padding: '0.5rem 0.75rem', marginBottom: 0, cursor: 'pointer' }}
@@ -151,15 +155,25 @@ function ItemRow({
           <span className="muted">
             · {stageBlock} · {responseFormatLabel(item.responseFormat)}
           </span>
-          <div className="muted" style={{ fontSize: '0.8rem' }}>
+          <div className="muted text-xs">
             {item.stem ? item.stem.replace(/<[^>]*>/g, '').slice(0, 50) : '(발문 없음)'}
           </div>
         </div>
         <div style={{ display: 'flex', gap: '0.3rem' }} onClick={(e) => e.stopPropagation()}>
-          <button className="btn btn-sm" disabled={index === 0} onClick={() => onMove(-1)} aria-label="위로">
+          <button
+            className="btn btn-sm"
+            disabled={index === 0}
+            onClick={() => onMove(-1)}
+            aria-label="위로"
+          >
             ↑
           </button>
-          <button className="btn btn-sm" disabled={index === count - 1} onClick={() => onMove(1)} aria-label="아래로">
+          <button
+            className="btn btn-sm"
+            disabled={index === count - 1}
+            onClick={() => onMove(1)}
+            aria-label="아래로"
+          >
             ↓
           </button>
           <button className="btn btn-sm" onClick={onToggle}>
@@ -207,11 +221,13 @@ function itemIncompleteReason(item: Item): string | null {
     }
     case 'complex_mc': {
       const rows = item.matrix?.rows ?? [];
-      if (rows.length === 0 || rows.some((r) => !r.text.trim() || !r.answer)) return '진술과 각 행 정답을 채우세요.';
+      if (rows.length === 0 || rows.some((r) => !r.text.trim() || !r.answer))
+        return '진술과 각 행 정답을 채우세요.';
       break;
     }
     case 'short_auto': {
-      if ((item.acceptedAnswers ?? []).filter((a) => a.trim()).length === 0) return '허용 정답을 입력하세요.';
+      if ((item.acceptedAnswers ?? []).filter((a) => a.trim()).length === 0)
+        return '허용 정답을 입력하세요.';
       break;
     }
     case 'open_human': {

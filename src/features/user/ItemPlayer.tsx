@@ -12,12 +12,11 @@ interface ItemPlayerProps {
 
 export function ItemPlayer({ item, value, onChange, index, readOnly }: ItemPlayerProps) {
   return (
-    <div className="card">
-      <div className="muted" style={{ fontSize: '0.85rem' }}>
-        {index != null ? `문항 ${index + 1}` : item.id}
-      </div>
+    <div className="card item-card">
+      <div className="item-no">{index != null ? `문항 ${index + 1}` : item.id}</div>
       <div
-        style={{ fontWeight: 600, margin: '0.25rem 0 0.75rem' }}
+        className="item-stem"
+        id={`stem-${item.id}`}
         dangerouslySetInnerHTML={{ __html: item.stem || '(발문 없음)' }}
       />
       {renderBody(item, value, onChange, readOnly)}
@@ -34,16 +33,24 @@ function renderBody(
   switch (item.responseFormat) {
     case 'simple_mc':
       return (
-        <div role="radiogroup" aria-label="선택지">
-          {(item.choices ?? []).map((c) => (
-            <label key={c.id} className="choice-option">
+        <div role="radiogroup" aria-labelledby={`stem-${item.id}`} className="choice-list">
+          {(item.choices ?? []).map((c, i) => (
+            <label
+              key={c.id}
+              className={value === c.id ? 'choice-option is-checked' : 'choice-option'}
+            >
               <input
                 type="radio"
+                className="visually-hidden"
                 name={`q-${item.id}`}
                 checked={value === c.id}
                 disabled={readOnly}
                 onChange={() => onChange(c.id)}
+                aria-label={c.text}
               />
+              <span className="choice-marker" aria-hidden="true">
+                {i + 1}
+              </span>
               <span>{c.text}</span>
             </label>
           ))}
@@ -56,7 +63,7 @@ function renderBody(
       const picks = (value ?? {}) as Record<string, string>;
       return (
         <div className="table-scroll">
-          <table className="data-table">
+          <table className="data-table matrix-table">
             <thead>
               <tr>
                 <th>진술</th>
@@ -70,7 +77,7 @@ function renderBody(
                 <tr key={row.id}>
                   <td>{row.text}</td>
                   {m.cols.map((col) => (
-                    <td key={col} style={{ textAlign: 'center' }}>
+                    <td key={col} className="matrix-cell">
                       <input
                         type="radio"
                         name={`q-${item.id}-${row.id}`}
@@ -93,16 +100,21 @@ function renderBody(
       return (
         <input
           type="text"
+          className="answer-input"
+          aria-labelledby={`stem-${item.id}`}
           value={typeof value === 'string' ? value : ''}
           disabled={readOnly}
           onChange={(e) => onChange(e.target.value)}
           placeholder="답을 입력하세요"
+          autoComplete="off"
         />
       );
 
     case 'open_human':
       return (
         <textarea
+          className="answer-textarea"
+          aria-labelledby={`stem-${item.id}`}
           rows={5}
           value={typeof value === 'string' ? value : ''}
           disabled={readOnly}
