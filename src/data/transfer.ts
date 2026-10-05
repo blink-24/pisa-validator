@@ -9,7 +9,7 @@ import {
 import { uid } from '../core/ids';
 import type { Subtest, Unit, Passage, Item, Session } from '../types';
 
-const FORMAT = 'pisa-validator';
+export const FORMAT = 'pisa-validator';
 
 // ---- 소검사 단위 내보내기 ----
 
@@ -190,7 +190,14 @@ export async function importSubtest(exp: SubtestExport, mode: ImportMode): Promi
   return importAsNewCopy(exp);
 }
 
-async function importOverwrite(exp: SubtestExport): Promise<string> {
+/**
+ * 같은 ID로 덮어쓰기. preserveUpdatedAt이면 파일의 수정 시각을 그대로 둔다
+ * (배포본 동기화에서 '이 기기에서 배포 이후 수정했는지'를 수정 시각으로 비교하기 때문).
+ */
+export async function importOverwrite(
+  exp: SubtestExport,
+  opts: { preserveUpdatedAt?: boolean } = {},
+): Promise<string> {
   const stId = exp.subtest.id;
   await db.transaction('rw', [db.subtests, db.units, db.passages, db.items, db.sessions, db.assets], async () => {
     const oldUnits = await db.units.where('subtestId').equals(stId).toArray();
@@ -200,7 +207,9 @@ async function importOverwrite(exp: SubtestExport): Promise<string> {
     await db.units.bulkDelete([...oldUnitIds]);
     await db.items.where('subtestId').equals(stId).delete();
 
-    await db.subtests.put({ ...exp.subtest, updatedAt: new Date().toISOString() });
+    await db.subtests.put(
+      opts.preserveUpdatedAt ? exp.subtest : { ...exp.subtest, updatedAt: new Date().toISOString() },
+    );
     await db.units.bulkPut(exp.units);
     await db.passages.bulkPut(exp.passages);
     await db.items.bulkPut(exp.items);

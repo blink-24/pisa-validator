@@ -6,6 +6,7 @@ import { ActiveSubtestScreen } from './ActiveSubtestScreen';
 import { CodingQueue } from '../coding/CodingQueue';
 import { PilotScreen } from '../pilot/PilotScreen';
 import { ReportWizard } from '../report/ReportWizard';
+import { PublishScreen } from './PublishScreen';
 
 /** 관리자 영역 레이아웃 + 하위 라우트. */
 export function AdminHome() {
@@ -26,6 +27,9 @@ export function AdminHome() {
           <NavLink className="admin-tab" to="/admin/active">
             사용자 소검사 설정
           </NavLink>
+          <NavLink className="admin-tab" to="/admin/publish">
+            배포
+          </NavLink>
           <NavLink className="admin-tab" to="/admin/coding">
             채점
           </NavLink>
@@ -45,6 +49,7 @@ export function AdminHome() {
         <Route index element={<SubtestList />} />
         <Route path="subtest/:id" element={<SubtestEditor />} />
         <Route path="active" element={<ActiveSubtestScreen />} />
+        <Route path="publish" element={<PublishScreen />} />
         <Route path="coding" element={<CodingQueue />} />
         <Route path="pilot" element={<PilotScreen />} />
         <Route path="report" element={<ReportWizard />} />

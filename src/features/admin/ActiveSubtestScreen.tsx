@@ -71,6 +71,10 @@ export function ActiveSubtestScreen() {
       <p className="muted">
         정합성 오류가 없는 소검사만 선택할 수 있습니다. 한 번에 하나만 활성화됩니다.
       </p>
+      <p className="notice notice-warn">
+        여기서 바꾼 설정은 <strong>이 기기에만</strong> 적용됩니다. 모든 학생 기기에 적용하려면
+        '배포' 탭에서 배포 파일을 만들어 저장소에 올리세요.
+      </p>
 
       {activatable.length === 0 ? (
         <p className="notice notice-warn">활성화 가능한(오류 없는) 소검사가 없습니다.</p>
