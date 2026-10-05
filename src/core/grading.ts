@@ -1,7 +1,7 @@
 // 상/중/하 등급 산출 (design §3.3). 전제/한계: IRT 아님 — 보고서 Ⅶ에 고정 명시.
 
 import type { Item, ResponseRecord, Subtest, Grade, Result } from '../types';
-import { responseScore } from './scoring';
+import { itemScore } from './scoring';
 import { autoRate, classify } from './routing';
 import { groupOfProcess, type ProcessGroupCode } from '../data/taxonomy';
 
@@ -11,15 +11,13 @@ export interface ScoredContext {
   responses: ResponseRecord[];
 }
 
-/** 득점비율 합/개수. 미채점 구성형은 제외(채점 완료분만). */
-function scoredRate(items: Item[], responses: ResponseRecord[]): { sum: number; total: number } {
+/** 득점비율 합/개수. 건너뛴 문항은 0점, 미채점 구성형은 제외(채점 완료분만). */
+export function scoredRate(items: Item[], responses: ResponseRecord[]): { sum: number; total: number } {
   const byId = new Map(responses.map((r) => [r.itemId, r]));
   let sum = 0;
   let total = 0;
   for (const it of items) {
-    const r = byId.get(it.id);
-    if (!r) continue;
-    const s = responseScore(it, r);
+    const s = itemScore(it, byId.get(it.id));
     if (s == null) continue; // 미채점 구성형
     sum += s;
     total++;
@@ -27,13 +25,17 @@ function scoredRate(items: Item[], responses: ResponseRecord[]): { sum: number; 
   return { sum, total };
 }
 
-/** 응시 문항에 미채점 구성형(open_human, humanCode 없음)이 있으면 true → 잠정 */
+/**
+ * 응시 문항에 미채점 구성형(open_human, humanCode 없음)이 있으면 true → 잠정.
+ * 응답 기록 자체가 없는 구성형은 채점 대기열에 나타나지 않으므로 0점 처리하고 잠정으로 보지 않는다
+ * (그렇지 않으면 영원히 '잠정'으로 남는다).
+ */
 export function hasUngradedOpen(items: Item[], responses: ResponseRecord[]): boolean {
   const byId = new Map(responses.map((r) => [r.itemId, r]));
   return items.some((it) => {
     if (it.responseFormat !== 'open_human') return false;
     const r = byId.get(it.id);
-    return !r || r.humanCode == null;
+    return !!r && r.humanCode == null;
   });
 }
 
@@ -51,9 +53,7 @@ export function byProcessGroup(
   for (const it of items) {
     const g = groupOfProcess(it.cognitiveProcess);
     if (!g) continue;
-    const r = byId.get(it.id);
-    if (!r) continue;
-    const s = responseScore(it, r);
+    const s = itemScore(it, byId.get(it.id));
     if (s == null) continue;
     acc[g].total++;
     if (s >= 0.5) acc[g].correct++;

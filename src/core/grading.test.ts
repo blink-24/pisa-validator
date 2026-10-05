@@ -11,6 +11,25 @@ describe('hasUngradedOpen', () => {
     const items = [makeItem({ id: 'CR901Q01', responseFormat: 'open_human' })];
     expect(hasUngradedOpen(items, [resp('CR901Q01', '답', { humanCode: 2 })])).toBe(false);
   });
+  it('응답 기록 없이 건너뛴 구성형은 잠정 사유가 아니다 (채점 대기열에 나타나지 않음)', () => {
+    const items = [makeItem({ id: 'CR901Q01', responseFormat: 'open_human' })];
+    expect(hasUngradedOpen(items, [])).toBe(false);
+  });
+});
+
+describe('computeGrade — 건너뛴 문항', () => {
+  it('건너뛴 문항은 0점으로 분모에 포함된다', () => {
+    const subtest = makeSubtest({ structure: 'single' });
+    const items = [
+      makeItem({ id: 'CR901Q01', answer: 'a' }),
+      makeItem({ id: 'CR901Q02', answer: 'a' }),
+      makeItem({ id: 'CR901Q03', answer: 'a' }),
+    ];
+    // 1문항만 맞히고 2문항은 건너뜀 → 1/3 = 33% → 하 (건너뛴 문항을 빼면 100% → 상으로 잘못 판정됨)
+    const { grade, first } = computeGrade({ subtest, items, responses: [resp('CR901Q01', 'a')] });
+    expect(grade).toBe('low');
+    expect(first.total).toBe(3);
+  });
 });
 
 describe('computeGrade single', () => {

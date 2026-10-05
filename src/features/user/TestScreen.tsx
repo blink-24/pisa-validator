@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { db, loadBundle, type SubtestBundle } from '../../data/db';
 import {
+  markStageCompleted,
   nextStagePlan,
   recordResponse,
   saveSession,
@@ -124,8 +125,11 @@ export function TestScreen() {
   }
 
   async function advanceStage() {
-    const current = sessionRef.current;
-    if (!bundle || !current) return;
+    const before = sessionRef.current;
+    if (!bundle || !before) return;
+    // 건너뛴 문항이 있어도 현재 단계를 끝난 것으로 기록해야 다음 단계로 넘어간다.
+    const current = plan ? markStageCompleted(before, plan.stage) : before;
+    if (current !== before) await saveSession(current);
     const { plan: p, session: s2 } = await nextStagePlan(bundle, current);
     applySession(s2);
     setPlan(p);
