@@ -53,19 +53,19 @@ function pearson(xs: number[], ys: number[]): number | null {
   return num / Math.sqrt(dx * dy);
 }
 
-/** 세션의 전체 득점비율(총점) — 교정 상관 계산용 */
-function sessionTotalRate(session: Session, itemsById: Map<string, Item>): number {
+/** 세션의 채점된 응답 득점 합계와 개수 — 교정 총점 계산용 */
+function sessionScoredSum(session: Session, itemsById: Map<string, Item>): { sum: number; count: number } {
   let sum = 0;
-  let total = 0;
+  let count = 0;
   for (const r of session.responses) {
     const it = itemsById.get(r.itemId);
     if (!it) continue;
     const s = responseScore(it, r);
-    if (s == null) continue;
+    if (s == null) continue; // 미채점 구성형 제외
     sum += s;
-    total++;
+    count++;
   }
-  return total ? sum / total : 0;
+  return { sum, count };
 }
 
 export function computeItemStats(items: Item[], sessions: Session[]): ItemStat[] {
@@ -74,8 +74,11 @@ export function computeItemStats(items: Item[], sessions: Session[]): ItemStat[]
 
   for (const item of items) {
     const scores: number[] = [];
-    const totals: number[] = [];
     const times: number[] = [];
+    // 변별도 전용 index-aligned 쌍. 교정 총점을 낼 수 없는 세션(채점 응답 1개)은 제외하므로
+    // scores/times보다 짧을 수 있다.
+    const discScores: number[] = [];
+    const discTotals: number[] = [];
     const coding: Record<CodingValue, number> = { 2: 0, 1: 0, 0: 0, 9: 0 };
     const choice: Record<string, number> = {};
 
@@ -85,9 +88,16 @@ export function computeItemStats(items: Item[], sessions: Session[]): ItemStat[]
       const s = responseScore(item, r);
       if (s == null) continue; // 미채점 구성형 제외
       scores.push(s);
-      // 교정 문항-총점: 총점에서 해당 문항 제외 효과를 근사 위해 전체 득점비율 사용 (design 주석)
-      totals.push(sessionTotalRate(sess, itemsById));
       times.push(r.timeMs);
+      // 교정된 문항-총점 상관(design §3.6): 총점에서 해당 문항 자신의 점수를 뺀
+      // 나머지 득점비율 = (채점 응답 득점 합 − 이 문항 점수) / (채점 응답 수 − 1).
+      // 채점 응답이 이 문항 하나뿐이면(분모 0) 나머지가 없으므로 변별도 입력에서 제외한다.
+      const { sum: scoredSum, count: scoredCount } = sessionScoredSum(sess, itemsById);
+      const restCount = scoredCount - 1;
+      if (restCount > 0) {
+        discScores.push(s);
+        discTotals.push((scoredSum - s) / restCount);
+      }
       if (item.responseFormat === 'open_human' && r.humanCode != null) {
         coding[r.humanCode]++;
       }
@@ -99,7 +109,7 @@ export function computeItemStats(items: Item[], sessions: Session[]): ItemStat[]
     const n = scores.length;
     const p = n ? scores.reduce((a, b) => a + b, 0) / n : 0;
     const sortedTimes = [...times].sort((a, b) => a - b);
-    const disc = pearson(scores, totals);
+    const disc = pearson(discScores, discTotals);
 
     out.push({
       itemId: item.id,
