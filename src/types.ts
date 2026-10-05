@@ -154,6 +154,8 @@ export interface Session {
   submittedAt?: ISO;
   path: PathStep[];
   responses: ResponseRecord[];
+  /** 학생이 '단계 완료'로 마친 단계. 미응답 문항이 있어도 다음 단계로 넘어가게 한다. */
+  completedStages?: Stage[];
   result?: Result;
   source: 'local' | 'imported';
   importedFrom?: string;

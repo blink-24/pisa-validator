@@ -1,9 +1,8 @@
 // 사유 문장 생성 (design §3.4). 템플릿 변수 치환만, 자유 생성 금지 (product steering 5).
 
 import type { Item, ResponseRecord, Subtest, Grade, PathStep } from '../types';
-import { byProcessGroup } from './grading';
+import { byProcessGroup, scoredRate } from './grading';
 import { autoRate } from './routing';
-import { responseScore } from './scoring';
 import { gradeLabel, processGroupLabel, blockLabel, stageLabel } from '../data/taxonomy';
 import type { ProcessGroupCode } from '../data/taxonomy';
 
@@ -74,18 +73,9 @@ export function buildExplanation(input: ExplanationInput): string {
 
   // ② 경로 및 최종 묶음
   if (subtest.structure === 'msat3') {
+    // 등급 계산(computeGrade)과 같은 집계 함수를 써서 문장과 판정이 어긋나지 않게 한다.
     const stage2Items = items.filter((i) => i.stage === 'stage2');
-    const byId = new Map(responses.map((r) => [r.itemId, r]));
-    let sum = 0;
-    let total = 0;
-    for (const it of stage2Items) {
-      const r = byId.get(it.id);
-      if (!r) continue;
-      const s = responseScore(it, r);
-      if (s == null) continue;
-      sum += s;
-      total++;
-    }
+    const { sum, total } = scoredRate(stage2Items, responses);
     const r2 = total ? sum / total : 0;
     const finalBlock = path.filter((p) => p.stage === 'stage2')[0]?.block;
     const cut = finalBlock === 'high' ? pct(subtest.gradeRule.highBlockCut) : pct(subtest.gradeRule.lowBlockCut);

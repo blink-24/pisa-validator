@@ -2,7 +2,7 @@
 
 import { db, loadBundle, type SubtestBundle } from './db';
 import { uid } from '../core/ids';
-import { withAutoScore } from '../core/scoring';
+import { withAutoScore, hasAnswer } from '../core/scoring';
 import { decideNextBlock } from '../core/routing';
 import { computeGrade, hasUngradedOpen, byProcessGroup } from '../core/grading';
 import { buildExplanation } from '../core/explanation';
@@ -53,6 +53,22 @@ export function stageItems(bundle: SubtestBundle, stage: Stage, block: Block): I
     });
 }
 
+/** 학생이 해당 단계를 끝냈다고 표시('단계 완료' 버튼). 이미 표시돼 있으면 그대로 반환. */
+export function markStageCompleted(session: Session, stage: Stage): Session {
+  const done = session.completedStages ?? [];
+  if (done.includes(stage)) return session;
+  return { ...session, completedStages: [...done, stage] };
+}
+
+/**
+ * 단계 완료 판정: 학생이 '단계 완료'를 눌렀거나, 문항이 없거나, 모든 문항에 응답 기록이 있음.
+ * 예전에는 '모든 문항 응답'만 기준이라, 한 문항이라도 건너뛰면 다음 단계 대신 같은 단계 처음으로 되돌아갔다.
+ */
+function isStageDone(session: Session, stage: Stage, items: Item[], answered: Set<string>): boolean {
+  if (session.completedStages?.includes(stage)) return true;
+  return items.length === 0 || items.every((i) => answered.has(i.id));
+}
+
 /**
  * 현재 세션의 경로를 바탕으로 다음에 응시할 단계 계획을 돌려준다.
  * - 아직 core 미완료: core
@@ -67,8 +83,7 @@ export async function nextStagePlan(
   const answered = new Set(session.responses.map((r) => r.itemId));
 
   const coreItems = stageItems(bundle, 'core', 'none');
-  const coreDone = coreItems.every((i) => answered.has(i.id));
-  if (!coreDone) {
+  if (!isStageDone(session, 'core', coreItems, answered)) {
     return { plan: { stage: 'core', block: 'none', items: coreItems }, session };
   }
 
@@ -87,8 +102,7 @@ export async function nextStagePlan(
     s1 = { stage: 'stage1', block, reason };
   }
   const s1Items = stageItems(bundle, 'stage1', s1.block as Block);
-  const s1Done = s1Items.length === 0 || s1Items.every((i) => answered.has(i.id));
-  if (!s1Done) {
+  if (!isStageDone(session, 'stage1', s1Items, answered)) {
     return { plan: { stage: 'stage1', block: s1.block as Block, items: s1Items }, session };
   }
 
@@ -104,8 +118,7 @@ export async function nextStagePlan(
     s2 = { stage: 'stage2', block, reason };
   }
   const s2Items = stageItems(bundle, 'stage2', s2.block as Block);
-  const s2Done = s2Items.length === 0 || s2Items.every((i) => answered.has(i.id));
-  if (!s2Done) {
+  if (!isStageDone(session, 'stage2', s2Items, answered)) {
     return { plan: { stage: 'stage2', block: s2.block as Block, items: s2Items }, session };
   }
 
@@ -134,9 +147,9 @@ export function recordResponse(session: Session, item: Item, answer: unknown, ti
   return { ...session, responses: [...others, scored] };
 }
 
-/** 미응답 문항 수(경로상 전체 기준). */
+/** 미응답 문항 수(경로상 전체 기준). 빈 답(지운 답)도 미응답으로 센다 — 화면의 응답 수 표시와 같은 기준. */
 export function unansweredCount(bundle: SubtestBundle, session: Session): number {
-  const answered = new Set(session.responses.map((r) => r.itemId));
+  const answered = new Set(session.responses.filter((r) => hasAnswer(r.answer)).map((r) => r.itemId));
   return itineraryItems(bundle, session).filter((i) => !answered.has(i.id)).length;
 }
 

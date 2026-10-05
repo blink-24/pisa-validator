@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { autoScore, humanCodeToScore, responseScore } from './scoring';
+import { autoScore, hasAnswer, humanCodeToScore, itemScore, responseScore } from './scoring';
 import { makeItem, resp } from './testFixtures';
 
 describe('autoScore', () => {
@@ -79,5 +79,34 @@ describe('responseScore', () => {
   it('채점된 구성형은 코드 기반', () => {
     const item = makeItem({ id: 'CR901Q06', responseFormat: 'open_human' });
     expect(responseScore(item, resp('CR901Q06', '답', { humanCode: 2 }))).toBe(1);
+  });
+});
+
+describe('itemScore / responseScore 보강', () => {
+  it('응답 기록이 없으면(건너뜀) 0점', () => {
+    expect(itemScore(makeItem({ id: 'X' }), undefined)).toBe(0);
+  });
+
+  it('저장된 autoScore보다 현재 정답 키를 우선한다 (정답 키 수정 반영)', () => {
+    const item = makeItem({ id: 'X', answer: 'b' }); // 응시 당시 'a'였다가 'b'로 수정
+    expect(responseScore(item, resp('X', 'b', { autoScore: 0 }))).toBe(1);
+  });
+
+  it('complex_mc fullCredit 숫자가 행 수를 넘으면 전 행 정답으로 보정', () => {
+    const item = makeItem({
+      id: 'X',
+      responseFormat: 'complex_mc',
+      matrix: { rows: [{ id: 'r1', text: '', answer: 'T' }], cols: ['T', 'F'], fullCredit: 3 },
+    });
+    expect(autoScore(item, { r1: 'T' })).toBe(1);
+  });
+
+  it('hasAnswer: 빈 문자열·빈 객체·null은 미응답', () => {
+    expect(hasAnswer('')).toBe(false);
+    expect(hasAnswer('  ')).toBe(false);
+    expect(hasAnswer({})).toBe(false);
+    expect(hasAnswer(null)).toBe(false);
+    expect(hasAnswer('a')).toBe(true);
+    expect(hasAnswer({ r1: 'T' })).toBe(true);
   });
 });

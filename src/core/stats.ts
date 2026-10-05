@@ -71,6 +71,11 @@ function sessionScoredSum(session: Session, itemsById: Map<string, Item>): { sum
 export function computeItemStats(items: Item[], sessions: Session[]): ItemStat[] {
   const itemsById = new Map(items.map((i) => [i.id, i]));
   const out: ItemStat[] = [];
+  // 세션별 응답 색인과 채점 합계는 문항과 무관하므로 한 번만 계산 (문항 수 × 세션 수 × 응답 수 반복 방지)
+  const perSession = sessions.map((sess) => ({
+    byItem: new Map(sess.responses.map((r) => [r.itemId, r])),
+    ...sessionScoredSum(sess, itemsById),
+  }));
 
   for (const item of items) {
     const scores: number[] = [];
@@ -82,8 +87,8 @@ export function computeItemStats(items: Item[], sessions: Session[]): ItemStat[]
     const coding: Record<CodingValue, number> = { 2: 0, 1: 0, 0: 0, 9: 0 };
     const choice: Record<string, number> = {};
 
-    for (const sess of sessions) {
-      const r = sess.responses.find((x) => x.itemId === item.id);
+    for (const sess of perSession) {
+      const r = sess.byItem.get(item.id);
       if (!r) continue; // 이 문항을 보지 않은 학생 제외
       const s = responseScore(item, r);
       if (s == null) continue; // 미채점 구성형 제외
@@ -92,7 +97,7 @@ export function computeItemStats(items: Item[], sessions: Session[]): ItemStat[]
       // 교정된 문항-총점 상관(design §3.6): 총점에서 해당 문항 자신의 점수를 뺀
       // 나머지 득점비율 = (채점 응답 득점 합 − 이 문항 점수) / (채점 응답 수 − 1).
       // 채점 응답이 이 문항 하나뿐이면(분모 0) 나머지가 없으므로 변별도 입력에서 제외한다.
-      const { sum: scoredSum, count: scoredCount } = sessionScoredSum(sess, itemsById);
+      const { sum: scoredSum, count: scoredCount } = sess;
       const restCount = scoredCount - 1;
       if (restCount > 0) {
         discScores.push(s);

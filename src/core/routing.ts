@@ -1,7 +1,7 @@
 // 단계·묶음 결정 (design §3.2). 자동 채점 문항만 사용 (Req 6.5).
 
 import type { Item, ResponseRecord, RoutingConfig, Block } from '../types';
-import { responseScore } from './scoring';
+import { itemScore } from './scoring';
 import { mulberry32, seedFromString } from './ids';
 
 export type FirstClass = 'high' | 'mid' | 'low';
@@ -9,6 +9,7 @@ export type FirstClass = 'high' | 'mid' | 'low';
 /**
  * 자동 채점 문항들의 정답률(0~1).
  * 구성형(open_human) 문항은 분기 계산에서 제외한다 (Req 6.5).
+ * 건너뛴(응답 없는) 문항은 0점으로 분모에 포함한다.
  * 자동 채점 대상이 하나도 없으면 null (분모 0 → 판정 불가).
  */
 export function autoRate(
@@ -20,9 +21,7 @@ export function autoRate(
   let total = 0;
   for (const it of items) {
     if (it.responseFormat === 'open_human') continue;
-    const r = byId.get(it.id);
-    if (!r) continue;
-    const s = responseScore(it, r);
+    const s = itemScore(it, byId.get(it.id));
     if (s == null) continue;
     sum += s;
     total++;
