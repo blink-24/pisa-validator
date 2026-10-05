@@ -2,14 +2,14 @@
   "format": "pisa-validator",
   "kind": "published",
   "version": 1,
-  "publishedAt": "2026-10-05T15:49:00.012Z",
+  "publishedAt": "2026-10-05T16:23:55.648Z",
   "activeSubtestId": "st_41d3e579-14f2-49b4-89ff-361199b1f2b8",
   "subtests": [
     {
       "format": "pisa-validator",
       "kind": "subtest",
       "version": 1,
-      "exportedAt": "2026-10-05T15:49:00.012Z",
+      "exportedAt": "2026-10-05T16:23:55.648Z",
       "subtest": {
         "id": "st_41d3e579-14f2-49b4-89ff-361199b1f2b8",
         "title": "ST-01 소설 속 기술, 우리 곁의 기술",
@@ -35,14 +35,14 @@
         },
         "allowWithinUnitNav": true,
         "createdAt": "2026-10-05T15:22:52.694Z",
-        "updatedAt": "2026-10-05T15:37:57.046Z"
+        "updatedAt": "2026-10-05T16:23:46.124Z"
       },
       "units": [
         {
           "id": "u_dd17a7fb-11f1-41a8-90a5-327a1bb24d2e",
           "subtestId": "st_41d3e579-14f2-49b4-89ff-361199b1f2b8",
           "unitNo": 901,
-          "title": "소설 속 하루",
+          "title": "상황",
           "scenarioIntro": "당신은 고등학교 1학년 독서 모둠 '미래 읽기'의 모둠원입니다. 이번 국어 시간 모둠 과제는 「소설 속 기술, 우리 곁의 기술」 발표입니다. 모둠원들은 먼저 미래 사회를 그린 소설의 한 장면을 함께 읽었으며, 이후 채팅방에서 소설에 나온 기술 가운데 지금 우리 사회에 실제로 쓰이는 기술은 무엇인지, 각자 직접 겪어 본 기술은 무엇인지에 대해 이야기를 나누었습니다. 대화 과정에서 여러분은 관련 기사 두 편을 찾았습니다. 이제 소설과 기사, 친구들의 대화를 읽고, 기술이 앞으로 어떤 방향으로 발전해야 하는지 모둠의 생각을 정리해야 합니다.",
           "passageIds": [
             "p_513cd2ec-c998-4ee5-b2a3-3948febf107d",
