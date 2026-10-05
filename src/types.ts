@@ -168,7 +168,8 @@ export interface Asset {
   name: string;
 }
 
-export type AppMetaKey = 'activeSubtestId' | 'lastBackupAt' | 'persisted';
+// publishedAt: 이 기기에 마지막으로 반영한 배포본(public/content/published.json)의 배포 시각
+export type AppMetaKey = 'activeSubtestId' | 'lastBackupAt' | 'persisted' | 'publishedAt';
 export interface AppMeta {
   key: AppMetaKey;
   value: string;

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Routes, Route, useNavigate, Navigate } from 'react-router-dom';
 import { PasswordDialog } from './features/admin/PasswordDialog';
 import { RequireAdmin } from './features/admin/RequireAdmin';
@@ -7,11 +7,18 @@ import { IntroScreen } from './features/user/IntroScreen';
 import { TestScreen } from './features/user/TestScreen';
 import { ResultScreen } from './features/user/ResultScreen';
 import { AdminHome } from './features/admin/AdminHome';
+import { syncPublishedContent } from './data/published';
 
 /** 전역 레이아웃: 우측 상단 ⚙ 고정 + 라우트 아웃렛. */
 export default function App() {
   const [showPassword, setShowPassword] = useState(false);
+  // 배포본(public/content/published.json)을 먼저 반영해야 학생 화면이 최신 시험 정보를 보여 준다.
+  const [synced, setSynced] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    syncPublishedContent().finally(() => setSynced(true));
+  }, []);
 
   function onGear() {
     if (isAdmin()) {
@@ -49,20 +56,24 @@ export default function App() {
       </header>
 
       <main className="app-main" id="main-content" tabIndex={-1}>
-        <Routes>
-          <Route path="/" element={<IntroScreen />} />
-          <Route path="/test" element={<TestScreen />} />
-          <Route path="/result" element={<ResultScreen />} />
-          <Route
-            path="/admin/*"
-            element={
-              <RequireAdmin>
-                <AdminHome />
-              </RequireAdmin>
-            }
-          />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
+        {!synced ? (
+          <p className="muted">시험 정보를 불러오는 중...</p>
+        ) : (
+          <Routes>
+            <Route path="/" element={<IntroScreen />} />
+            <Route path="/test" element={<TestScreen />} />
+            <Route path="/result" element={<ResultScreen />} />
+            <Route
+              path="/admin/*"
+              element={
+                <RequireAdmin>
+                  <AdminHome />
+                </RequireAdmin>
+              }
+            />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        )}
       </main>
 
       {showPassword && (
