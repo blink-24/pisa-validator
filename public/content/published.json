@@ -2,7 +2,744 @@
   "format": "pisa-validator",
   "kind": "published",
   "version": 1,
-  "publishedAt": "",
-  "activeSubtestId": null,
-  "subtests": []
+  "publishedAt": "2026-10-05T15:49:00.012Z",
+  "activeSubtestId": "st_41d3e579-14f2-49b4-89ff-361199b1f2b8",
+  "subtests": [
+    {
+      "format": "pisa-validator",
+      "kind": "subtest",
+      "version": 1,
+      "exportedAt": "2026-10-05T15:49:00.012Z",
+      "subtest": {
+        "id": "st_41d3e579-14f2-49b4-89ff-361199b1f2b8",
+        "title": "ST-01 소설 속 기술, 우리 곁의 기술",
+        "description": "소설 발췌 1편과 기사 2편(배양육, AI 글래스와 수능)을 묶은 시나리오 기반 3단계 적응형 소검사. 독서 모둠의 채팅 대화를 따라 자료를 읽고 기술의 발전 방향을 정리한다. 10문항, 경로당 6~7문항.",
+        "target": "고1(만 15세)",
+        "structure": "msat3",
+        "routing": {
+          "firstCut": {
+            "high": 0.7,
+            "mid": 0.4
+          },
+          "assign": "deterministic",
+          "midGoesTo": "low"
+        },
+        "gradeRule": {
+          "highBlockCut": 0.5,
+          "lowBlockCut": 0.7
+        },
+        "gradeDescriptors": {
+          "high": "소설 속 내용을 대사와 행동을 통해 추론할 수 있다. 기사의 근거가 누구에게서 나왔는지, 사실인지 의견인지 따질 수 있다. 서로 다른 자료의 관점 차이를 조정해, 자기 경험과 이어진 발전 방향을 제시할 수 있다.",
+          "mid": "각 자료의 중심 정보를 정확히 찾고, 목적에 맞는 근거를 골라 두 자료를 이을 수 있다. 근거의 신뢰성 판단과 관점 차이 조정은 부분적으로 해낸다.",
+          "low": "소설과 기사에 직접 드러난 정보를 찾을 수 있다. 자료를 목적에 맞게 연결하는 데는 도움이 필요하다."
+        },
+        "allowWithinUnitNav": true,
+        "createdAt": "2026-10-05T15:22:52.694Z",
+        "updatedAt": "2026-10-05T15:37:57.046Z"
+      },
+      "units": [
+        {
+          "id": "u_dd17a7fb-11f1-41a8-90a5-327a1bb24d2e",
+          "subtestId": "st_41d3e579-14f2-49b4-89ff-361199b1f2b8",
+          "unitNo": 901,
+          "title": "소설 속 하루",
+          "scenarioIntro": "당신은 고등학교 1학년 독서 모둠 '미래 읽기'의 모둠원입니다. 이번 국어 시간 모둠 과제는 「소설 속 기술, 우리 곁의 기술」 발표입니다. 모둠원들은 먼저 미래 사회를 그린 소설의 한 장면을 함께 읽었으며, 이후 채팅방에서 소설에 나온 기술 가운데 지금 우리 사회에 실제로 쓰이는 기술은 무엇인지, 각자 직접 겪어 본 기술은 무엇인지에 대해 이야기를 나누었습니다. 대화 과정에서 여러분은 관련 기사 두 편을 찾았습니다. 이제 소설과 기사, 친구들의 대화를 읽고, 기술이 앞으로 어떤 방향으로 발전해야 하는지 모둠의 생각을 정리해야 합니다.",
+          "passageIds": [
+            "p_513cd2ec-c998-4ee5-b2a3-3948febf107d",
+            "p_17f3b991-19a6-4ff4-8324-2bd075cdc049"
+          ]
+        },
+        {
+          "id": "u_edba4f25-3bd1-4c6a-ad16-0e15f09f02ee",
+          "subtestId": "st_41d3e579-14f2-49b4-89ff-361199b1f2b8",
+          "unitNo": 902,
+          "title": "배양육, 어디까지 왔나",
+          "scenarioIntro": "도윤이 소설 속 배양육과 관련된 기사를 찾아 채팅방에 올렸다. 기사를 읽고 친구들의 대화에 답해 보자.",
+          "passageIds": [
+            "p_99cc8bf4-142f-4851-a2e0-8473b244b25c",
+            "p_7a5b59bf-b430-43a4-94fe-dc7e3328188e",
+            "p_0cc126f1-0349-42cc-bd61-f35b28277528"
+          ]
+        },
+        {
+          "id": "u_8dc824d1-420c-464e-8536-a1d3d4dc792b",
+          "subtestId": "st_41d3e579-14f2-49b4-89ff-361199b1f2b8",
+          "unitNo": 903,
+          "title": "배양육, 식탁에 오르려면",
+          "scenarioIntro": "도윤이 소설 속 배양육과 관련된 기사를 찾아 채팅방에 올렸다. 기사를 읽고 친구들의 대화에 답해 보자.",
+          "passageIds": [
+            "p_b2586b65-c869-4d8e-a1f6-3cd3683adc2e",
+            "p_019ca54a-0d1f-46a7-a059-a320c1566f08",
+            "p_dfea01eb-1cc6-4d1e-a5de-f406cef5ba69"
+          ]
+        },
+        {
+          "id": "u_89058e21-3a86-4ace-9d99-c75d63610ae1",
+          "subtestId": "st_41d3e579-14f2-49b4-89ff-361199b1f2b8",
+          "unitNo": 904,
+          "title": "안경 너머의 시험장",
+          "scenarioIntro": "민재가 소설 속 안경과 비슷한 기술을 다룬 기사를 찾았다. 기사를 읽고 발표 결론을 함께 준비해 보자.",
+          "passageIds": [
+            "p_d0b9223f-96f8-4364-b8f1-ce839b7579c1",
+            "p_5ab23726-8e90-469e-8c29-c725ac206dec",
+            "p_39adec40-f1f5-4408-8e3c-1067b9299d2a"
+          ]
+        },
+        {
+          "id": "u_276b301c-b74c-4028-96e0-4acb44e34eb1",
+          "subtestId": "st_41d3e579-14f2-49b4-89ff-361199b1f2b8",
+          "unitNo": 905,
+          "title": "기술과 공정성",
+          "scenarioIntro": "민재가 소설 속 안경과 비슷한 기술을 다룬 기사를 찾았다. 지금까지 읽은 자료를 모두 떠올리며 발표 결론을 함께 준비해 보자.",
+          "passageIds": [
+            "p_e252d332-e739-4b94-bd2c-b1fcabebb96c",
+            "p_f8334917-ce85-472a-a16c-b9d16bd3693c",
+            "p_2df232ff-2e63-4272-b6f3-d229e75104d9",
+            "p_eaa235e7-a23f-49a5-a704-0fcda55e4e0a"
+          ]
+        }
+      ],
+      "passages": [
+        {
+          "id": "p_019ca54a-0d1f-46a7-a059-a320c1566f08",
+          "unitId": "u_8dc824d1-420c-464e-8536-a1d3d4dc792b",
+          "title": "소설 발췌(친절한 존)",
+          "imageIds": [],
+          "bodyHtml": "<p>{소설 원문}</p>",
+          "source": {
+            "work": "{출처 확인 필요}"
+          },
+          "situation": "personal",
+          "textFormat": "continuous",
+          "textType": "narration",
+          "organization": "static"
+        },
+        {
+          "id": "p_0cc126f1-0349-42cc-bd61-f35b28277528",
+          "unitId": "u_edba4f25-3bd1-4c6a-ad16-0e15f09f02ee",
+          "title": "모둠 채팅 대화 2",
+          "imageIds": [],
+          "bodyHtml": "<p><strong>도윤:</strong> 존이 배양육 요리를 권하잖아. 배양육 기사 찾았는데, 이게 지금 현실이랑 얼마나 가까운지 근거를 대 보자.</p><p><strong>도윤:</strong> 기사 보니까 맛은 진짜 고기랑 같대. 시식한 사람 10명 중 9명이 만족했다던데?</p><p><strong>서아:</strong> 근데 선동은 배양육이 싫다고 했잖아. 맛 때문은 아니었던 것 같은데.</p>",
+          "source": {
+            "work": "자작 시나리오 텍스트"
+          },
+          "situation": "educational",
+          "textFormat": "continuous",
+          "textType": "transaction",
+          "organization": "dynamic"
+        },
+        {
+          "id": "p_17f3b991-19a6-4ff4-8324-2bd075cdc049",
+          "unitId": "u_dd17a7fb-11f1-41a8-90a5-327a1bb24d2e",
+          "title": "모둠 채팅 대화 1",
+          "imageIds": [],
+          "bodyHtml": "<p><strong>하린:</strong> 소설 다 읽었지? 일단 소설에 나온 기술 중에 지금 실제로 있는 걸 찾아보자.</p><p><strong>서아:</strong> 존이 선동의의 표정만 보고 기분을 알아채는 장면 신기했어. 내 음악 앱도 내가 자주 건너뛰는 곡은 알아서 안 틀어 주거든.</p><p><strong>민재:</strong> 나는 타자기 장면. 글자가 안경 속 가상 화면에 뜨는 거.</p>",
+          "source": {
+            "work": "자작 시나리오 텍스트"
+          },
+          "situation": "educational",
+          "textFormat": "continuous",
+          "textType": "transaction",
+          "organization": "dynamic"
+        },
+        {
+          "id": "p_2df232ff-2e63-4272-b6f3-d229e75104d9",
+          "unitId": "u_276b301c-b74c-4028-96e0-4acb44e34eb1",
+          "title": "기사 1: 배양육",
+          "imageIds": [],
+          "bodyHtml": "<p>{기사 원문}</p>",
+          "source": {
+            "author": "송정현",
+            "work": "\"시중 소고기보다 싸게\"…'배양육 1호' 눈앞 팡세, 내년 식탁 노린다",
+            "publisher": "머니투데이",
+            "year": "2026",
+            "pages": "https://www.mt.co.kr/future/2026/10/05/2026091108193622661"
+          },
+          "situation": "public",
+          "textFormat": "continuous",
+          "textType": "exposition",
+          "organization": "static"
+        },
+        {
+          "id": "p_39adec40-f1f5-4408-8e3c-1067b9299d2a",
+          "unitId": "u_89058e21-3a86-4ace-9d99-c75d63610ae1",
+          "title": "모둠 채팅 대화 3",
+          "imageIds": [],
+          "bodyHtml": "<p><strong>민재:</strong> 소설 속 안경이랑 이 기사에 나온 AI 글래스, 비슷한 기술 같지 않아?</p><p><strong>하린:</strong> 수능 때 부정행위가 문제라면, 그냥 시험장에서 모두 안경을 벗게 하면 되잖아?</p><p><strong>서아:</strong> 이제 발표 결론을 써야 해. 기술이 앞으로 어떻게 발전해야 하는지 각자 한 문단씩 써 오자.</p>",
+          "source": {
+            "work": "자작 시나리오 텍스트"
+          },
+          "situation": "educational",
+          "textFormat": "continuous",
+          "textType": "transaction",
+          "organization": "dynamic"
+        },
+        {
+          "id": "p_513cd2ec-c998-4ee5-b2a3-3948febf107d",
+          "unitId": "u_dd17a7fb-11f1-41a8-90a5-327a1bb24d2e",
+          "title": "소설 발췌(친절한 존)",
+          "imageIds": [],
+          "bodyHtml": "<p>{소설 원문}</p>",
+          "source": {
+            "work": "{출처 확인 필요}"
+          },
+          "situation": "personal",
+          "textFormat": "continuous",
+          "textType": "narration",
+          "organization": "static"
+        },
+        {
+          "id": "p_5ab23726-8e90-469e-8c29-c725ac206dec",
+          "unitId": "u_89058e21-3a86-4ace-9d99-c75d63610ae1",
+          "title": "소설 발췌(친절한 존)",
+          "imageIds": [],
+          "bodyHtml": "<p>{소설 원문}</p>",
+          "source": {
+            "work": "{출처 확인 필요}"
+          },
+          "situation": "personal",
+          "textFormat": "continuous",
+          "textType": "narration",
+          "organization": "static"
+        },
+        {
+          "id": "p_7a5b59bf-b430-43a4-94fe-dc7e3328188e",
+          "unitId": "u_edba4f25-3bd1-4c6a-ad16-0e15f09f02ee",
+          "title": "소설 발췌(친절한 존)",
+          "imageIds": [],
+          "bodyHtml": "<p>{소설 원문}</p>",
+          "source": {
+            "work": "{출처 확인 필요}"
+          },
+          "situation": "personal",
+          "textFormat": "continuous",
+          "textType": "narration",
+          "organization": "static"
+        },
+        {
+          "id": "p_99cc8bf4-142f-4851-a2e0-8473b244b25c",
+          "unitId": "u_edba4f25-3bd1-4c6a-ad16-0e15f09f02ee",
+          "title": "기사 1: 배양육",
+          "imageIds": [],
+          "bodyHtml": "<p>{기사 원문}</p>",
+          "source": {
+            "author": "송정현",
+            "work": "\"시중 소고기보다 싸게\"…'배양육 1호' 눈앞 팡세, 내년 식탁 노린다",
+            "publisher": "머니투데이",
+            "year": "2026",
+            "pages": "https://www.mt.co.kr/future/2026/10/05/2026091108193622661"
+          },
+          "situation": "public",
+          "textFormat": "continuous",
+          "textType": "exposition",
+          "organization": "static"
+        },
+        {
+          "id": "p_b2586b65-c869-4d8e-a1f6-3cd3683adc2e",
+          "unitId": "u_8dc824d1-420c-464e-8536-a1d3d4dc792b",
+          "title": "기사 1: 배양육",
+          "imageIds": [],
+          "bodyHtml": "<p>{기사 원문}</p>",
+          "source": {
+            "author": "송정현",
+            "work": "\"시중 소고기보다 싸게\"…'배양육 1호' 눈앞 팡세, 내년 식탁 노린다",
+            "publisher": "머니투데이",
+            "year": "2026",
+            "pages": "https://www.mt.co.kr/future/2026/10/05/2026091108193622661"
+          },
+          "situation": "public",
+          "textFormat": "continuous",
+          "textType": "exposition",
+          "organization": "static"
+        },
+        {
+          "id": "p_d0b9223f-96f8-4364-b8f1-ce839b7579c1",
+          "unitId": "u_89058e21-3a86-4ace-9d99-c75d63610ae1",
+          "title": "기사 2: AI 글래스와 수능",
+          "imageIds": [],
+          "bodyHtml": "<p>{기사 원문}</p>",
+          "source": {
+            "author": "최혜림",
+            "work": "[단독] AI 글래스 '커닝' 막는다…수능 대응 매뉴얼 15일 공개",
+            "publisher": "파이낸셜뉴스",
+            "year": "2026",
+            "pages": "https://www.fnnews.com/news/202610031407159838"
+          },
+          "situation": "public",
+          "textFormat": "continuous",
+          "textType": "exposition",
+          "organization": "static"
+        },
+        {
+          "id": "p_dfea01eb-1cc6-4d1e-a5de-f406cef5ba69",
+          "unitId": "u_8dc824d1-420c-464e-8536-a1d3d4dc792b",
+          "title": "모둠 채팅 대화 2",
+          "imageIds": [],
+          "bodyHtml": "<p><strong>도윤:</strong> 존이 배양육 요리를 권하잖아. 배양육 기사 찾았는데, 이게 지금 현실이랑 얼마나 가까운지 근거를 대 보자.</p><p><strong>도윤:</strong> 기사 보니까 맛은 진짜 고기랑 같대. 시식한 사람 10명 중 9명이 만족했다던데?</p><p><strong>서아:</strong> 근데 선동은 배양육이 싫다고 했잖아. 맛 때문은 아니었던 것 같은데.</p>",
+          "source": {
+            "work": "자작 시나리오 텍스트"
+          },
+          "situation": "educational",
+          "textFormat": "continuous",
+          "textType": "transaction",
+          "organization": "dynamic"
+        },
+        {
+          "id": "p_e252d332-e739-4b94-bd2c-b1fcabebb96c",
+          "unitId": "u_276b301c-b74c-4028-96e0-4acb44e34eb1",
+          "title": "기사 2: AI 글래스와 수능",
+          "imageIds": [],
+          "bodyHtml": "<p>{기사 원문}</p>",
+          "source": {
+            "author": "최혜림",
+            "work": "[단독] AI 글래스 '커닝' 막는다…수능 대응 매뉴얼 15일 공개",
+            "publisher": "파이낸셜뉴스",
+            "year": "2026",
+            "pages": "https://www.fnnews.com/news/202610031407159838"
+          },
+          "situation": "public",
+          "textFormat": "continuous",
+          "textType": "exposition",
+          "organization": "static"
+        },
+        {
+          "id": "p_eaa235e7-a23f-49a5-a704-0fcda55e4e0a",
+          "unitId": "u_276b301c-b74c-4028-96e0-4acb44e34eb1",
+          "title": "모둠 채팅 대화 3",
+          "imageIds": [],
+          "bodyHtml": "<p><strong>민재:</strong> 소설 속 안경이랑 이 기사에 나온 AI 글래스, 비슷한 기술 같지 않아?</p><p><strong>하린:</strong> 수능 때 부정행위가 문제라면, 그냥 시험장에서 모두 안경을 벗게 하면 되잖아?</p><p><strong>서아:</strong> 이제 발표 결론을 써야 해. 기술이 앞으로 어떻게 발전해야 하는지 각자 한 문단씩 써 오자.</p>",
+          "source": {
+            "work": "자작 시나리오 텍스트"
+          },
+          "situation": "educational",
+          "textFormat": "continuous",
+          "textType": "transaction",
+          "organization": "dynamic"
+        },
+        {
+          "id": "p_f8334917-ce85-472a-a16c-b9d16bd3693c",
+          "unitId": "u_276b301c-b74c-4028-96e0-4acb44e34eb1",
+          "title": "소설 발췌(친절한 존)",
+          "imageIds": [],
+          "bodyHtml": "<p>{소설 원문}</p>",
+          "source": {
+            "work": "{출처 확인 필요}"
+          },
+          "situation": "personal",
+          "textFormat": "continuous",
+          "textType": "narration",
+          "organization": "static"
+        }
+      ],
+      "items": [
+        {
+          "id": "CR901Q01",
+          "subtestId": "st_41d3e579-14f2-49b4-89ff-361199b1f2b8",
+          "unitId": "u_dd17a7fb-11f1-41a8-90a5-327a1bb24d2e",
+          "order": 0,
+          "stage": "core",
+          "block": "none",
+          "stem": "선동이 존의 배양육 요리 제안에 \"별로....\"라고 대답한 까닭으로 소설에 드러난 것은?",
+          "cognitiveProcess": "literal",
+          "responseFormat": "simple_mc",
+          "sourceRequirement": "single",
+          "difficulty": "low",
+          "tags": [
+            "scenario",
+            "literary"
+          ],
+          "questionIntent": "인물의 속마음이 드러난 서술을 찾아 확인한다.",
+          "commentary": "서술자가 선동의 속마음을 직접 밝힌 문장에 근거가 있다. ②는 \"재료는 냉장고에 다 있어\"와 어긋난다.",
+          "choices": [
+            {
+              "id": "c_26b98b2c-3295-43b8-b824-f12061084358",
+              "text": "배양육이 몸에 해롭다고 생각해서"
+            },
+            {
+              "id": "c_b526ea76-0131-4532-86a3-1541df633c23",
+              "text": "냉장고에 요리 재료가 없어서"
+            },
+            {
+              "id": "c_8583ef56-ce5a-4204-9228-248a5f484ec6",
+              "text": "고기는 요리하기 번거롭고 먹은 뒤 몸이 무겁게 느껴져서"
+            },
+            {
+              "id": "c_cd7e9f98-8e05-444a-97d0-00d9681b6f3c",
+              "text": "단백질을 이미 충분히 먹고 있어서"
+            }
+          ],
+          "answer": "c_8583ef56-ce5a-4204-9228-248a5f484ec6"
+        },
+        {
+          "id": "CR904Q01",
+          "subtestId": "st_41d3e579-14f2-49b4-89ff-361199b1f2b8",
+          "unitId": "u_89058e21-3a86-4ace-9d99-c75d63610ae1",
+          "order": 0,
+          "stage": "stage2",
+          "block": "low",
+          "stem": "기사 2에 따르면, 교육부와 평가원이 15일에 배포할 예정인 것은?",
+          "cognitiveProcess": "literal",
+          "responseFormat": "simple_mc",
+          "sourceRequirement": "single",
+          "difficulty": "low",
+          "tags": [
+            "scenario"
+          ],
+          "questionIntent": "기사의 축자적 정보를 확인한다.",
+          "commentary": "③은 전문가가 검토해야 한다고 말한 내용일 뿐 배포 예정물이 아니다.",
+          "choices": [
+            {
+              "id": "c_83734d9f-c729-4fb4-9824-392dbae85b1f",
+              "text": "AI 글래스 판매 금지 법안"
+            },
+            {
+              "id": "c_d2717eb8-879e-4884-97c4-c9a5255ccc54",
+              "text": "감독관용 대응 지침과 수험생 유의사항"
+            },
+            {
+              "id": "c_cc50c99c-04b2-42ce-8117-c270a68957b1",
+              "text": "시험장용 전자기기 탐지 장비"
+            },
+            {
+              "id": "c_6add77e1-631d-4712-b72b-4f00ff524717",
+              "text": "시력교정용 안경 대여 안내"
+            }
+          ],
+          "answer": "c_d2717eb8-879e-4884-97c4-c9a5255ccc54"
+        },
+        {
+          "id": "CR901Q02",
+          "subtestId": "st_41d3e579-14f2-49b4-89ff-361199b1f2b8",
+          "unitId": "u_dd17a7fb-11f1-41a8-90a5-327a1bb24d2e",
+          "order": 1,
+          "stage": "core",
+          "block": "none",
+          "stem": "하린의 제안대로 소설에 나오는 기술을 정리하려 한다. 각 기술이 소설에 나오는지 고르시오.",
+          "cognitiveProcess": "scan_locate",
+          "responseFormat": "complex_mc",
+          "sourceRequirement": "single",
+          "difficulty": "low",
+          "tags": [
+            "scenario",
+            "literary"
+          ],
+          "questionIntent": "소설에 등장하는 기술을 정확히 확인한다.",
+          "commentary": "(라)는 \"배달\"에서, (마)는 \"냉장고\"라는 낱말에서 생길 수 있는 오독을 겨냥한 것이다. 5행 모두 맞아야 정답.",
+          "matrix": {
+            "rows": [
+              {
+                "id": "r_bd1f0fac-b297-4d3c-94a4-f69cd44116cf",
+                "text": "(가) 배양육으로 만든 요리",
+                "answer": "나온다"
+              },
+              {
+                "id": "r_6de5b85c-6bb7-4d02-bfff-bcd1672db95a",
+                "text": "(나) 사람의 표정과 억양을 읽어 기분을 알아채는 존재",
+                "answer": "나온다"
+              },
+              {
+                "id": "r_02a2a966-b384-4dd1-804c-016454cf49ae",
+                "text": "(다) 입력한 글자를 안경을 통해 가상현실로 보여 주는 장치",
+                "answer": "나온다"
+              },
+              {
+                "id": "r_e5c51f5b-4b08-4feb-a6f4-893ccfd967e5",
+                "text": "(라) 음식을 집 앞까지 날라 주는 드론",
+                "answer": "나오지 않는다"
+              },
+              {
+                "id": "r_d91d1203-67f3-41bb-909d-4a6a5b284e79",
+                "text": "(마) 떨어진 재료를 스스로 주문하는 냉장고",
+                "answer": "나오지 않는다"
+              }
+            ],
+            "cols": [
+              "나온다",
+              "나오지 않는다"
+            ],
+            "fullCredit": "all"
+          }
+        },
+        {
+          "id": "CR902Q02",
+          "subtestId": "st_41d3e579-14f2-49b4-89ff-361199b1f2b8",
+          "unitId": "u_edba4f25-3bd1-4c6a-ad16-0e15f09f02ee",
+          "order": 1,
+          "stage": "stage1",
+          "block": "low",
+          "stem": "기사 1에 따르면, 국내 기업들이 배양육 상용화에 아직 성공하지 못한 가장 큰 이유는?",
+          "cognitiveProcess": "scan_locate",
+          "responseFormat": "simple_mc",
+          "sourceRequirement": "single",
+          "difficulty": "low",
+          "tags": [
+            "scenario"
+          ],
+          "questionIntent": "기사에서 명시된 핵심 정보를 찾는다.",
+          "commentary": "기사는 배지와 바이오리액터 비용 등 높은 생산비를 가장 큰 이유로 든다.",
+          "choices": [
+            {
+              "id": "c_fcdf0bd2-5fb6-416f-8c26-cbdd0cabda1a",
+              "text": "소비자가 맛에 만족하지 않아서"
+            },
+            {
+              "id": "c_4c9981f1-4f10-4027-9cb4-5dfdfcafed5e",
+              "text": "생산비가 높아서"
+            },
+            {
+              "id": "c_4701eb70-d9b7-4a1b-8539-b1e6b8b9ebb1",
+              "text": "식약처가 배양육을 심사하지 않아서"
+            },
+            {
+              "id": "c_16eaf31d-b41e-4636-a0ca-098a6c01fb19",
+              "text": "가축 전염병이 늘어나서"
+            }
+          ],
+          "answer": "c_4c9981f1-4f10-4027-9cb4-5dfdfcafed5e"
+        },
+        {
+          "id": "CR903Q02",
+          "subtestId": "st_41d3e579-14f2-49b4-89ff-361199b1f2b8",
+          "unitId": "u_8dc824d1-420c-464e-8536-a1d3d4dc792b",
+          "order": 1,
+          "stage": "stage1",
+          "block": "high",
+          "stem": "도윤은 \"맛은 진짜 고기랑 같대. 시식한 사람 10명 중 9명이 만족했대\"라고 말했다. 이 말을 발표 근거로 쓰기 전에 짚어야 할 점으로 가장 적절한 것은?",
+          "cognitiveProcess": "assess_quality",
+          "responseFormat": "simple_mc",
+          "sourceRequirement": "multiple",
+          "difficulty": "high",
+          "tags": [
+            "scenario"
+          ],
+          "questionIntent": "근거의 출처와 표현의 정확성을 평가한다.",
+          "commentary": "시식 결과는 회사가 전한 수치이고 반응도 '유사하다'였다. 2022년 시제품 시식이라는 점도 덧붙일 수 있다.",
+          "choices": [
+            {
+              "id": "c_5a46e854-d3fa-4f91-aa65-b166067707ac",
+              "text": "시식 결과는 회사가 전한 것이고 반응도 '비슷하다'였으므로, '진짜 고기와 같다'고 단정하기 어렵다."
+            },
+            {
+              "id": "c_18daa819-710f-441c-8bb8-bad98da33c22",
+              "text": "시식회가 해외에서 열려 국내 소비자와는 관계가 없다."
+            },
+            {
+              "id": "c_c5bc02ed-68f5-4013-bfd8-1dfbd8c5f152",
+              "text": "기사에는 시식회에 관한 내용이 전혀 없다."
+            },
+            {
+              "id": "c_87477f37-3016-46ee-b1f8-4f5f04451660",
+              "text": "만족한 사람은 10명 중 1명뿐이었다."
+            }
+          ],
+          "answer": "c_5a46e854-d3fa-4f91-aa65-b166067707ac"
+        },
+        {
+          "id": "CR905Q02",
+          "subtestId": "st_41d3e579-14f2-49b4-89ff-361199b1f2b8",
+          "unitId": "u_276b301c-b74c-4028-96e0-4acb44e34eb1",
+          "order": 1,
+          "stage": "stage2",
+          "block": "high",
+          "stem": "하린은 \"그냥 시험장에서 모두 안경을 벗게 하면 되잖아?\"라고 했다. 기사 2에 비추어 볼 때 하린의 제안이 고려하지 못한 점은?",
+          "cognitiveProcess": "detect_conflict",
+          "responseFormat": "simple_mc",
+          "sourceRequirement": "multiple",
+          "difficulty": "high",
+          "tags": [
+            "scenario"
+          ],
+          "questionIntent": "친구의 주장과 기사가 부딪치는 지점을 찾아 조정한다.",
+          "commentary": "기사 속 전문가는 시력교정용 안경 착용자의 권리 보호와 과도한 검사 지양을 함께 강조한다.",
+          "choices": [
+            {
+              "id": "c_4535d94e-c1d5-4674-8f67-077367b12a02",
+              "text": "AI 글래스는 일반 안경과 쉽게 구별된다는 점"
+            },
+            {
+              "id": "c_66aadb04-7e9b-4441-9c88-3d2258a6ae81",
+              "text": "시력교정용 안경을 써야 하는 수험생의 권리와, 모든 수험생을 과도하게 검사하는 문제"
+            },
+            {
+              "id": "c_7a0dd452-7e05-4c32-8fee-18b6fb0e8e82",
+              "text": "수능에 AI 글래스를 가져와도 된다는 점"
+            },
+            {
+              "id": "c_8f467c63-2fc1-44e7-ad0c-433f213c68be",
+              "text": "부정행위 적발 건수가 해마다 줄고 있다는 점"
+            }
+          ],
+          "answer": "c_66aadb04-7e9b-4441-9c88-3d2258a6ae81"
+        },
+        {
+          "id": "CR902Q03",
+          "subtestId": "st_41d3e579-14f2-49b4-89ff-361199b1f2b8",
+          "unitId": "u_edba4f25-3bd1-4c6a-ad16-0e15f09f02ee",
+          "order": 2,
+          "stage": "stage1",
+          "block": "low",
+          "stem": "도윤은 존이 배양육을 권하는 장면이 지금 현실과 얼마나 가까운지 근거를 대려고 한다. 기사 1에서 고를 근거로 가장 적절한 것은?",
+          "cognitiveProcess": "integrate_infer",
+          "responseFormat": "simple_mc",
+          "sourceRequirement": "multiple",
+          "difficulty": "mid",
+          "tags": [
+            "scenario",
+            "literary"
+          ],
+          "questionIntent": "목적에 맞는 근거를 다른 텍스트에서 골라 연결한다.",
+          "commentary": "소설 속 일상과 현실의 거리를 보여 주는 근거는 상용화 시점이다. 나머지는 사실이지만 도윤의 목적에 맞지 않는다.",
+          "choices": [
+            {
+              "id": "c_4587edea-6fec-4d1b-b537-6c28d3d02ea7",
+              "text": "세포가 자라려면 '배지'라는 영양분이 필요하다."
+            },
+            {
+              "id": "c_a5b6ca4d-5a12-4156-85e1-95a2b7343d68",
+              "text": "한 회사가 판매 허가를 신청해, 이르면 내년에 국내에서 소고기 배양육이 팔릴 수 있다."
+            },
+            {
+              "id": "c_78b29458-87f6-4701-996a-b75a696b02e1",
+              "text": "폭염으로 가축이 많이 폐사해 닭고기 소매가격이 올랐다."
+            },
+            {
+              "id": "c_17b02490-289a-4a48-be54-5baa89b05c0b",
+              "text": "회사 공동창업진 상당수가 기계공학을 전공했다."
+            }
+          ],
+          "answer": "c_a5b6ca4d-5a12-4156-85e1-95a2b7343d68"
+        },
+        {
+          "id": "CR904Q03",
+          "subtestId": "st_41d3e579-14f2-49b4-89ff-361199b1f2b8",
+          "unitId": "u_89058e21-3a86-4ace-9d99-c75d63610ae1",
+          "order": 2,
+          "stage": "stage2",
+          "block": "low",
+          "stem": "민재는 \"소설 속 안경이랑 기사에 나온 AI 글래스, 비슷한 기술 같지 않아?\"라고 했다. 두 텍스트를 함께 볼 때 가장 적절한 공통점은?",
+          "cognitiveProcess": "integrate_infer",
+          "responseFormat": "simple_mc",
+          "sourceRequirement": "multiple",
+          "difficulty": "mid",
+          "tags": [
+            "scenario",
+            "literary"
+          ],
+          "questionIntent": "서로 다른 텍스트에서 공통점을 추론한다.",
+          "commentary": "소설은 안경을 통해 글자가 가상현실로 보인다고 하고, 기사는 정보 표시 기능을 판단 기준으로 든다. ①과 ③은 기사에만 해당한다.",
+          "choices": [
+            {
+              "id": "c_0cc57472-f869-4ec5-83a4-0e3d8598f372",
+              "text": "둘 다 시험 부정행위에 쓰인 사례가 나온다."
+            },
+            {
+              "id": "c_1e4b06bb-63d7-4b3b-b07d-03ea18221650",
+              "text": "둘 다 안경을 통해 디지털 정보를 눈앞에 보여 주는 기술이다."
+            },
+            {
+              "id": "c_e79f61cd-fe5a-4314-a413-e5ab70637daa",
+              "text": "둘 다 촬영과 녹음 기능이 있다고 설명한다."
+            },
+            {
+              "id": "c_a1d5bc6b-132d-4491-8d0a-1ff813b333b9",
+              "text": "둘 다 판매가 금지된 기술이다."
+            }
+          ],
+          "answer": "c_1e4b06bb-63d7-4b3b-b07d-03ea18221650"
+        },
+        {
+          "id": "CR901Q04",
+          "subtestId": "st_41d3e579-14f2-49b4-89ff-361199b1f2b8",
+          "unitId": "u_dd17a7fb-11f1-41a8-90a5-327a1bb24d2e",
+          "order": 3,
+          "stage": "core",
+          "block": "none",
+          "stem": "존의 말과 행동에 대한 설명이 맞으면 '예', 틀리면 '아니요'를 고르시오.",
+          "cognitiveProcess": "integrate_infer",
+          "responseFormat": "complex_mc",
+          "sourceRequirement": "single",
+          "difficulty": "mid",
+          "tags": [
+            "scenario",
+            "literary"
+          ],
+          "questionIntent": "인물의 말과 행동에서 특성을 추론한다.",
+          "commentary": "(나) \"단백질을 더 먹었으면\", (다) \"선동의 의견에 동의했고\", (라) 배달을 말한 사람은 선동. 4행 모두 맞아야 정답.",
+          "matrix": {
+            "rows": [
+              {
+                "id": "r_0e2fb851-8bc9-4692-8667-7ceed75c08a1",
+                "text": "(가) 선동이 말로 하지 않은 생각을 표정과 억양으로 알아차렸다.",
+                "answer": "예"
+              },
+              {
+                "id": "r_49316913-b11c-4139-baef-c6a43d94be91",
+                "text": "(나) 선동의 건강을 생각해 요리를 제안했다.",
+                "answer": "예"
+              },
+              {
+                "id": "r_350f93e5-6e25-4790-9d46-ad83a9549664",
+                "text": "(다) 선동이 반대했는데도 배양육 요리를 끝까지 고집했다.",
+                "answer": "아니요"
+              },
+              {
+                "id": "r_7d3ea506-a08e-4cbe-8def-3dec262e04f4",
+                "text": "(라) 처음에 배달 음식을 먹자고 제안했다.",
+                "answer": "아니요"
+              }
+            ],
+            "cols": [
+              "예",
+              "아니요"
+            ],
+            "fullCredit": "all"
+          }
+        },
+        {
+          "id": "CR905Q04",
+          "subtestId": "st_41d3e579-14f2-49b4-89ff-361199b1f2b8",
+          "unitId": "u_276b301c-b74c-4028-96e0-4acb44e34eb1",
+          "order": 3,
+          "stage": "stage2",
+          "block": "high",
+          "stem": "소설 속 존(사람의 표정과 억양을 읽고 맞춰 주는 기술), 기사 1의 배양육, 기사 2의 AI 글래스 가운데 두 가지 이상을 고르시오. 각 기술이 사람에게 주는 이로움과 함께 생길 수 있는 문제를 자료에 근거해 밝히시오. 그리고 네가 겪어 본 기술 경험을 바탕으로, 기술이 앞으로 지켜야 할 발전 방향을 제안하시오.",
+          "cognitiveProcess": "reflect_content_form",
+          "responseFormat": "open_human",
+          "sourceRequirement": "multiple",
+          "difficulty": "high",
+          "tags": [
+            "scenario",
+            "literary"
+          ],
+          "questionIntent": "여러 자료와 자기 경험을 연결해 기술의 발전 방향을 성찰한다.",
+          "commentary": "'선한 기술/나쁜 기술' 이분법을 요구하지 않는다. 입장과 경험의 사실 여부는 채점하지 않는다.",
+          "coding": [
+            {
+              "code": 2,
+              "criterion": "서로 다른 자료의 기술 2개 이상에 대해 이로움과 문제를 자료에 근거해 밝히고, 경험과 이어진 발전 방향을 일관되게 제안함",
+              "examples": [
+                "AI 글래스는 정보를 눈앞에 보여 주지만 일반 안경과 구별이 어려워 시험 부정에 쓰일 수 있다. 존은 말하지 않아도 기분을 알아주지만 선동은 스스로 생각을 말할 기회가 줄어든다. 나도 추천 앱 때문에 고민 없이 고른 적이 있다. 기술은 편리함을 주되 사람이 스스로 판단할 여지를 남기는 쪽으로 발전해야 한다."
+              ]
+            },
+            {
+              "code": 1,
+              "criterion": "기술 2개를 다뤘으나 이로움과 문제 가운데 한쪽만 있거나, 경험·방향이 자료와 이어지지 않음",
+              "examples": []
+            },
+            {
+              "code": 0,
+              "criterion": "기술 1개만 근거 없이 다루거나 자료를 잘못 읽음",
+              "examples": []
+            },
+            {
+              "code": 9,
+              "criterion": "무응답",
+              "examples": []
+            }
+          ]
+        }
+      ],
+      "assets": []
+    }
+  ]
 }
