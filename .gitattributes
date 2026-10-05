@@ -1,0 +1,10 @@
+# Normalize line endings to LF for text files (CI runs on Linux)
+* text=auto eol=lf
+
+# Binary assets
+*.woff2 binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary

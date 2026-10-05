@@ -1,0 +1,18 @@
+/* 저장소 포함 한글 폰트 (public/fonts). 파일이 없으면 시스템 글꼴로 대체.
+   폰트 바이너리는 라이선스 확인 책임으로 사람이 넣는다 (public/fonts/README.md). */
+
+@font-face {
+  font-family: 'Pretendard';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/Pretendard-Regular.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Pretendard';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/Pretendard-Bold.woff2') format('woff2');
+}

@@ -1,0 +1,26 @@
+node_modules
+dist
+dist-ssr
+*.local
+.DS_Store
+coverage
+
+# 로그
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# 편집기
+.vscode/*
+!.vscode/extensions.json
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# 저작권 지문은 저장소에 커밋하지 않는다 (product steering 7)
+src/data/local-*.json
+*.local-passages.json

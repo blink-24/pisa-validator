@@ -1,0 +1,167 @@
+{
+  "_meta": {
+    "title": "PISA 2018/2025 읽기 평가틀 개념어 사전 (관리자 선택지)",
+    "basis": [
+      "KICE RRE 2019-11, pp.39-43 및 <표 Ⅲ-2> 문항 정보표(pp.45-51)",
+      "KICE ORM 2026-66 자료집 p.22 (PISA 2018/2025 읽기 평가틀)"
+    ],
+    "note": "required=true 항목은 문항 저장 시 필수. ext=true 항목은 PISA 원 분류가 아닌 본 도구의 확장값이며 보고서에 그 사실을 표기한다."
+  },
+  "item_required": {
+    "cognitive_process": {
+      "label": "인지 과정",
+      "en": "Cognitive Process",
+      "required": true,
+      "groups": [
+        {
+          "code": "locate",
+          "label": "정보 찾기",
+          "en": "Locating information",
+          "options": [
+            { "code": "scan_locate", "label": "텍스트 내 정보의 탐색과 확인", "en": "Scan and locate" },
+            { "code": "search_select", "label": "관련 텍스트의 검색과 선택", "en": "Search for and select relevant text" }
+          ]
+        },
+        {
+          "code": "understand",
+          "label": "이해하기",
+          "en": "Understanding",
+          "options": [
+            { "code": "literal", "label": "축자적 의미 표상", "en": "Represent literal meaning" },
+            { "code": "integrate_infer", "label": "통합과 추론 생성", "en": "Integrate and generate inferences" }
+          ]
+        },
+        {
+          "code": "evaluate_reflect",
+          "label": "평가와 성찰하기",
+          "en": "Evaluating and reflecting",
+          "options": [
+            { "code": "assess_quality", "label": "정보의 질과 신뢰성 평가", "en": "Assess quality and credibility" },
+            { "code": "reflect_content_form", "label": "내용과 형식 성찰", "en": "Reflect on content and form" },
+            { "code": "detect_conflict", "label": "갈등의 발견과 조정", "en": "Detect and handle conflict" }
+          ]
+        }
+      ]
+    },
+    "response_format": {
+      "label": "응답 형식",
+      "en": "Response Format",
+      "required": true,
+      "options": [
+        { "code": "simple_mc", "label": "단순선다형", "en": "Simple multiple choice", "auto_scored": true },
+        { "code": "complex_mc", "label": "복합선다형", "en": "Complex multiple choice", "auto_scored": true },
+        { "code": "open_human", "label": "구성형(교사 채점)", "en": "Open response (human coded)", "auto_scored": false },
+        { "code": "short_auto", "label": "구성형(자동 채점·단답 일치)", "en": "Short response (auto)", "auto_scored": true, "ext": true }
+      ]
+    },
+    "source_requirement": {
+      "label": "출처 요구",
+      "en": "Source Requirement for item",
+      "required": true,
+      "help": "이 문항을 해결하는 데 필요한 텍스트 수. 지문 단위의 '출처(단일/다중 텍스트)'와 구분된다.",
+      "options": [
+        { "code": "single", "label": "단일 출처", "en": "Single source", "desc": "하나의 텍스트만으로 정답 도출 가능" },
+        { "code": "multiple", "label": "다중 출처", "en": "Multiple sources", "desc": "둘 이상의 텍스트를 비교·통합해야 정답 도출" }
+      ]
+    },
+    "difficulty": {
+      "label": "난도",
+      "en": "Difficulty",
+      "required": true,
+      "help": "단계적 적응형 경로의 묶음 배정에 쓰는 설계상 난도. 파일럿 후 실제 정답률과 비교한다.",
+      "options": [
+        { "code": "low", "label": "하", "en": "Low", "weight": 1 },
+        { "code": "mid", "label": "중", "en": "Medium", "weight": 1.5 },
+        { "code": "high", "label": "상", "en": "High", "weight": 2 }
+      ]
+    }
+  },
+  "item_optional": {
+    "expected_level": {
+      "label": "예상 성취수준(참고)",
+      "en": "Expected proficiency level",
+      "options": ["1c", "1b", "1a", "2", "3", "4", "5", "6"]
+    },
+    "question_intent": {
+      "label": "문항 의도",
+      "en": "Question intent",
+      "type": "text",
+      "help": "예: 인물 행동의 이유를 추론한다 (PISA 'Framework Characteristics' 상자 양식)"
+    },
+    "item_tag": {
+      "label": "검증용 태그",
+      "type": "multi",
+      "options": [
+        { "code": "scenario", "label": "시나리오 기반", "ext": true },
+        { "code": "literary", "label": "문학 텍스트 기반", "ext": true },
+        { "code": "multi_perspective", "label": "복수 관점 제시형", "ext": true }
+      ]
+    }
+  },
+  "passage": {
+    "situation": {
+      "label": "상황",
+      "options": [
+        { "code": "personal", "label": "개인적" },
+        { "code": "public", "label": "공적" },
+        { "code": "educational", "label": "교육적" },
+        { "code": "occupational", "label": "직업적" }
+      ]
+    },
+    "text_format": {
+      "label": "텍스트 체재",
+      "options": [
+        { "code": "continuous", "label": "연속" },
+        { "code": "non_continuous", "label": "비연속" },
+        { "code": "mixed", "label": "혼합" }
+      ]
+    },
+    "text_type": {
+      "label": "텍스트 유형",
+      "options": [
+        { "code": "description", "label": "기술" },
+        { "code": "narration", "label": "서사" },
+        { "code": "exposition", "label": "설명" },
+        { "code": "argumentation", "label": "논증" },
+        { "code": "instruction", "label": "지시" },
+        { "code": "transaction", "label": "상호작용" }
+      ]
+    },
+    "organization": {
+      "label": "조직 및 탐색 구조",
+      "options": [
+        { "code": "static", "label": "정적" },
+        { "code": "dynamic", "label": "동적" }
+      ]
+    },
+    "text_source": {
+      "label": "출처(텍스트 수)",
+      "options": [
+        { "code": "single", "label": "단일" },
+        { "code": "multiple", "label": "다중" }
+      ]
+    }
+  },
+  "structure": {
+    "stage": [
+      { "code": "core", "label": "핵심단계" },
+      { "code": "stage1", "label": "1단계" },
+      { "code": "stage2", "label": "2단계" }
+    ],
+    "block_level": [
+      { "code": "low", "label": "하 묶음" },
+      { "code": "high", "label": "상 묶음" }
+    ],
+    "coding": [
+      { "code": 2, "label": "완전 정답(Code 2)" },
+      { "code": 1, "label": "부분 정답(Code 1)" },
+      { "code": 0, "label": "오답(Code 0)" },
+      { "code": 9, "label": "무응답(Code 9)" }
+    ],
+    "grade": [
+      { "code": "high", "label": "상" },
+      { "code": "mid", "label": "중" },
+      { "code": "low", "label": "하" }
+    ]
+  }
+}
