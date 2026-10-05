@@ -1,0 +1,12 @@
+{
+  "verdict": "APPROVED",
+  "findings": [
+    {
+      "severity": "non-blocking",
+      "confidence": "confirmed",
+      "label": "open_human exclusion path untested",
+      "detail": "Discrimination behavior for open_human items where some responses are ungraded (responseScore returns null and are dropped from scoredSum/scoredCount) is exercised only indirectly. Minor coverage gap, not a blocker; the scored/ungraded filter is shared with the pre-existing p path and unchanged by this diff."
+    }
+  ],
+  "reviewDoc": "c:\\Users\\User\\OneDrive\\문서\\GitHub\\pisa-validator\\.agents\\tasks\\review.md"
+}
