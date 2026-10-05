@@ -24,3 +24,6 @@ pnpm-debug.log*
 # 저작권 지문은 저장소에 커밋하지 않는다 (product steering 7)
 src/data/local-*.json
 *.local-passages.json
+
+# TypeScript incremental build cache
+*.tsbuildinfo
