@@ -149,7 +149,13 @@ export function difficultyMismatches(
   return bad;
 }
 
-/** 경로별 학생 수와 최종 등급 분포 (Req 13.5) */
+/** 잠정 등급 표시 접미사 (Req 13.5) — 'high(잠정)' */
+export const PROVISIONAL_SUFFIX = '(잠정)';
+
+/**
+ * 경로별 학생 수와 최종 등급 분포 (Req 13.5).
+ * 서술형 미채점으로 잠정인 등급은 확정 등급과 섞이지 않게 'high(잠정)'처럼 따로 센다.
+ */
 export function pathDistribution(sessions: Session[]): Record<string, { count: number; grades: Record<string, number> }> {
   const out: Record<string, { count: number; grades: Record<string, number> }> = {};
   for (const s of sessions) {
@@ -159,35 +165,81 @@ export function pathDistribution(sessions: Session[]): Record<string, { count: n
       .join(' → ') || '(단일 단계)';
     const entry = out[key] ?? (out[key] = { count: 0, grades: {} });
     entry.count++;
-    const g = s.result?.grade ?? '미정';
+    const g = s.result
+      ? `${s.result.grade}${s.result.provisional ? PROVISIONAL_SUFFIX : ''}`
+      : '미정';
     entry.grades[g] = (entry.grades[g] ?? 0) + 1;
   }
   return out;
 }
 
-/** 태그별 평균 p·변별도·문항 수 (Req 13.6) */
-export function tagComparison(
-  items: Item[],
-  stats: ItemStat[],
-): Record<string, { count: number; avgP: number; avgDisc: number | null }> {
+export interface TagStat {
+  /** 응답이 있는(n>0) 문항 수 — 평균 계산에 쓴 문항 */
+  count: number;
+  /** 이 태그가 달린 전체 문항 수 */
+  total: number;
+  /** 응답 있는 문항이 없으면 null */
+  avgP: number | null;
+  avgDisc: number | null;
+}
+
+/**
+ * 태그별 평균 p·변별도·문항 수 (Req 13.6).
+ * 적응형이라 아무도 보지 않은 문항(n=0)이 생긴다. 그 p는 '0점'이 아니라 '자료 없음'이므로
+ * 평균과 '문항 수'에서 뺀다(예전에는 p=0으로 평균에 섞여 태그 평균을 끌어내렸다).
+ */
+export function tagComparison(items: Item[], stats: ItemStat[]): Record<string, TagStat> {
   const statById = new Map(stats.map((s) => [s.itemId, s]));
-  const acc: Record<string, { ps: number[]; discs: number[] }> = {};
+  const acc: Record<string, { total: number; ps: number[]; discs: number[] }> = {};
   for (const it of items) {
     const st = statById.get(it.id);
-    if (!st) continue;
     for (const tag of it.tags ?? []) {
-      const a = acc[tag] ?? (acc[tag] = { ps: [], discs: [] });
+      const a = acc[tag] ?? (acc[tag] = { total: 0, ps: [], discs: [] });
+      a.total++;
+      if (!st || st.n === 0) continue; // 응답 없음 → 평균·문항 수 제외
       a.ps.push(st.p);
       if (st.discrimination != null) a.discs.push(st.discrimination);
     }
   }
-  const out: Record<string, { count: number; avgP: number; avgDisc: number | null }> = {};
+  const mean = (xs: number[]) => (xs.length ? xs.reduce((x, y) => x + y, 0) / xs.length : null);
+  const out: Record<string, TagStat> = {};
   for (const [tag, a] of Object.entries(acc)) {
-    out[tag] = {
-      count: a.ps.length,
-      avgP: a.ps.length ? a.ps.reduce((x, y) => x + y, 0) / a.ps.length : 0,
-      avgDisc: a.discs.length ? a.discs.reduce((x, y) => x + y, 0) / a.discs.length : null,
-    };
+    out[tag] = { count: a.ps.length, total: a.total, avgP: mean(a.ps), avgDisc: mean(a.discs) };
   }
   return out;
+}
+
+export interface ChoiceRate {
+  /** ①②③… (선지 제시 순서) */
+  label: string;
+  isAnswer: boolean;
+  count: number;
+  rate: number; // 0~1
+}
+
+/** ① ② … ⑳, 그 뒤는 (21) */
+function circled(i: number): string {
+  return i < 20 ? String.fromCharCode(0x2460 + i) : `(${i + 1})`;
+}
+
+/**
+ * 단순선다형 선지별 선택률 (Req 13.3). 내부 선지 ID 대신 제시 순서 번호와 정답 여부로 돌려준다.
+ * 아무도 고르지 않은 선지도 0%로 포함한다. 지금 문항에 없는 선지(편집으로 삭제)는 '?'로 묶는다.
+ */
+export function choiceRates(item: Item, dist: Record<string, number>): ChoiceRate[] {
+  const total = Object.values(dist).reduce((a, b) => a + b, 0);
+  const rate = (n: number) => (total ? n / total : 0);
+  const choices = item.choices ?? [];
+  const rows: ChoiceRate[] = choices.map((c, i) => ({
+    label: circled(i),
+    isAnswer: c.id === item.answer,
+    count: dist[c.id] ?? 0,
+    rate: rate(dist[c.id] ?? 0),
+  }));
+  const known = new Set(choices.map((c) => c.id));
+  const orphan = Object.entries(dist)
+    .filter(([id]) => !known.has(id))
+    .reduce((a, [, n]) => a + n, 0);
+  if (orphan) rows.push({ label: '?', isAnswer: false, count: orphan, rate: rate(orphan) });
+  return rows;
 }

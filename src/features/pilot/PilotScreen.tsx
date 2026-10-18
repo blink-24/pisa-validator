@@ -6,11 +6,14 @@ import { listSubtestSummaries, loadBundle, listSessions } from '../../data/db';
 import { exportResults, importResults } from '../../data/pilot';
 import { downloadJson, readJsonFile } from '../../data/transfer';
 import {
+  choiceRates,
   computeItemStats,
   difficultyMismatches,
   pathDistribution,
   tagComparison,
+  PROVISIONAL_SUFFIX,
   type ItemStat,
+  type TagStat,
 } from '../../core/stats';
 import { difficultyLabel, itemTagLabel, responseFormatLabel } from '../../data/taxonomy';
 import type { Item } from '../../types';
@@ -267,12 +270,11 @@ function ItemStatsTable({
             const discBad = s.discrimination != null && s.discrimination < thresholds.discMin;
             const notes: string[] = [];
             if (mismatches.has(s.itemId)) notes.push('난도 불일치');
-            if (s.choiceDist) {
-              const total = Object.values(s.choiceDist).reduce((a, b) => a + b, 0) || 1;
+            if (s.choiceDist && it) {
               notes.push(
                 '선택률: ' +
-                  Object.entries(s.choiceDist)
-                    .map(([k, v]) => `${k}=${Math.round((v / total) * 100)}%`)
+                  choiceRates(it, s.choiceDist)
+                    .map((c) => `${c.label}${c.isAnswer ? '★' : ''} ${Math.round(c.rate * 100)}%`)
                     .join(' '),
               );
             }
@@ -332,6 +334,7 @@ function PathTable({
               <td>{info.count}</td>
               <td>
                 {Object.entries(info.grades)
+                  .sort(([a], [b]) => gradeOrder(a) - gradeOrder(b))
                   .map(([g, n]) => `${g}:${n}`)
                   .join(', ')}
               </td>
@@ -343,11 +346,15 @@ function PathTable({
   );
 }
 
-function TagTable({
-  tags,
-}: {
-  tags: Record<string, { count: number; avgP: number; avgDisc: number | null }>;
-}) {
+/** 등급 분포 표시 순서: high, high(잠정), mid, mid(잠정), low, low(잠정), 그 외 */
+function gradeOrder(key: string): number {
+  const prov = key.endsWith(PROVISIONAL_SUFFIX);
+  const base = prov ? key.slice(0, -PROVISIONAL_SUFFIX.length) : key;
+  const i = ['high', 'mid', 'low'].indexOf(base);
+  return (i < 0 ? 3 : i) * 2 + (prov ? 1 : 0);
+}
+
+function TagTable({ tags }: { tags: Record<string, TagStat> }) {
   const entries = Object.entries(tags);
   if (entries.length === 0) return <p className="muted">태그가 지정된 문항이 없습니다.</p>;
   return (
@@ -356,7 +363,7 @@ function TagTable({
         <thead>
           <tr>
             <th>태그</th>
-            <th>문항 수</th>
+            <th>문항 수(응답 있음/전체)</th>
             <th>평균 p</th>
             <th>평균 변별도</th>
           </tr>
@@ -365,8 +372,10 @@ function TagTable({
           {entries.map(([tag, info]) => (
             <tr key={tag}>
               <td>{itemTagLabel(tag)}</td>
-              <td>{info.count}</td>
-              <td>{fmtPct(info.avgP)}</td>
+              <td>
+                {info.count}/{info.total}
+              </td>
+              <td>{info.avgP == null ? '-' : fmtPct(info.avgP)}</td>
               <td>{info.avgDisc == null ? '-' : info.avgDisc.toFixed(2)}</td>
             </tr>
           ))}
