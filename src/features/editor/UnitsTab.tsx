@@ -345,7 +345,16 @@ function PassageEditor({
             <label>쪽</label>
             <input
               value={draft.source.pages ?? ''}
+              placeholder="예: 75-77"
               onChange={(e) => setSource('pages', e.target.value)}
+              onBlur={() => save()}
+            />
+          </div>
+          <div className="field">
+            <label>비고</label>
+            <input
+              value={draft.source.note ?? ''}
+              onChange={(e) => setSource('note', e.target.value)}
               onBlur={() => save()}
             />
           </div>

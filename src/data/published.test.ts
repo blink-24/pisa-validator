@@ -49,6 +49,19 @@ describe('저장소의 배포 파일', () => {
   it('public/content/published.json이 올바른 형식이다 (잘못 올리면 배포 전 테스트에서 멈춤)', () => {
     expect(() => validatePublished(JSON.parse(committedRaw))).not.toThrow();
   });
+
+  it("'{출처 확인 필요}' 같은 임시 출처 표지가 남아 있지 않다", () => {
+    expect(committedRaw).not.toContain('{출처 확인 필요}');
+  });
+
+  it('지문 출처의 비고(note)는 형식 검사를 통과하고 그대로 보존된다', () => {
+    const pub = validatePublished(JSON.parse(committedRaw));
+    const raw = JSON.parse(committedRaw) as PublishedContent;
+    const notesOf = (c: PublishedContent) =>
+      c.subtests.flatMap((s) => s.passages.map((p) => p.source?.note)).filter(Boolean);
+    expect(notesOf(pub)).toHaveLength(5);
+    expect(notesOf(pub)).toEqual(notesOf(raw));
+  });
 });
 
 describe('validatePublished', () => {

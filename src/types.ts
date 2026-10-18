@@ -58,7 +58,8 @@ export interface PassageSource {
   work?: string;
   publisher?: string;
   year?: string;
-  pages?: string;
+  pages?: string; // 쪽수(예: 75-77). 숫자·범위일 때만 표시에 '쪽'이 붙는다
+  note?: string; // 비고(예: '인물은 가상'). 출처 유무 판정에는 넣지 않는다
 }
 
 export interface Passage {

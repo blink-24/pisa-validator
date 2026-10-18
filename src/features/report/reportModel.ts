@@ -28,6 +28,7 @@ import {
   taxonomy,
 } from '../../data/taxonomy';
 import { combinedLabel, itemPassages } from '../../core/itemPassages';
+import { formatSource } from '../../core/sourceFormat';
 import type { Subtest, Passage, Item } from '../../types';
 
 export interface ReportItemRow {
@@ -193,11 +194,10 @@ export async function buildReportModel(subtestId: string): Promise<ReportModel> 
   const conformance = runConformance({ subtest, units, passages, items });
 
   const sources = passages
-    .map((p) => {
-      const s = p.source;
-      const parts = [s.author, s.work, s.publisher, s.year, s.pages ? `${s.pages}쪽` : ''].filter(Boolean);
-      return { passageTitle: p.title || '(제목 없음)', source: parts.join(', ') || '(출처 미기재)' };
-    });
+    .map((p) => ({
+      passageTitle: p.title || '(제목 없음)',
+      source: formatSource(p.source) || '(출처 미기재)',
+    }));
 
   const model: ReportModel = {
     overview: {
