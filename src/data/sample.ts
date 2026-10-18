@@ -42,7 +42,7 @@ export async function seedSampleSubtest(): Promise<string> {
   const items: Item[] = [];
 
   // ---- 단위 901: 핵심단계 (안내문 1지문, 형식 혼합) ----
-  const u1 = unit(SAMPLE_ID, 901, '텃밭 프로젝트 안내', '학교 텃밭 동아리가 신입 부원을 모집합니다. 아래 안내문을 읽고 질문에 답하세요.');
+  const u1 = unit(SAMPLE_ID, 901, '텃밭 프로젝트 안내', '학교 텃밭 동아리가 신입 부원을 모집합니다. 아래 안내문을 읽고 질문에 답하세요.', 'educational');
   const p1 = passage(u1.id, '텃밭 동아리 신입 부원 모집 안내', {
     situation: 'educational',
     textFormat: 'continuous',
@@ -84,7 +84,7 @@ export async function seedSampleSubtest(): Promise<string> {
 
   // ---- 단위 902: 1단계 (하 묶음 / 상 묶음) ----
   // 하 묶음: 쉬운 단일 지문
-  const u2 = unit(SAMPLE_ID, 902, '식물 기르기 기초', '텃밭에서 식물을 기르는 방법을 설명한 글입니다. 읽고 답하세요.');
+  const u2 = unit(SAMPLE_ID, 902, '식물 기르기 기초', '텃밭에서 식물을 기르는 방법을 설명한 글입니다. 읽고 답하세요.', 'personal');
   const p2 = passage(u2.id, '물 주기의 기본', {
     situation: 'educational',
     textFormat: 'continuous',
@@ -115,7 +115,7 @@ export async function seedSampleSubtest(): Promise<string> {
   );
 
   // 상 묶음: 두 지문 비교(다중)
-  const u3 = unit(SAMPLE_ID, 903, '퇴비 논쟁', '퇴비 사용에 대한 서로 다른 두 글을 읽고, 두 글을 비교해 답하세요.');
+  const u3 = unit(SAMPLE_ID, 903, '퇴비 논쟁', '퇴비 사용에 대한 서로 다른 두 글을 읽고, 두 글을 비교해 답하세요.', 'public');
   const p3a = passage(u3.id, '글 (가): 퇴비 찬성', {
     situation: 'public',
     textFormat: 'continuous',
@@ -161,7 +161,7 @@ export async function seedSampleSubtest(): Promise<string> {
   );
 
   // ---- 단위 904: 2단계 (하/상 묶음) ----
-  const u4 = unit(SAMPLE_ID, 904, '수확 일지', '텃밭 수확량을 적은 간단한 표입니다. 읽고 답하세요.');
+  const u4 = unit(SAMPLE_ID, 904, '수확 일지', '텃밭 수확량을 적은 간단한 표입니다. 읽고 답하세요.', 'educational');
   const p4 = passage(u4.id, '주간 수확 일지', {
     situation: 'educational',
     textFormat: 'non_continuous',
@@ -224,8 +224,14 @@ export async function seedSampleSubtest(): Promise<string> {
 
 // ---- 빌더 헬퍼 ----
 
-function unit(subtestId: string, unitNo: number, title: string, scenarioIntro: string): Unit {
-  return { id: uid('u'), subtestId, unitNo, title, scenarioIntro, passageIds: [] };
+function unit(
+  subtestId: string,
+  unitNo: number,
+  title: string,
+  scenarioIntro: string,
+  scenarioSituation: string,
+): Unit {
+  return { id: uid('u'), subtestId, unitNo, title, scenarioIntro, scenarioSituation, passageIds: [] };
 }
 
 function passage(

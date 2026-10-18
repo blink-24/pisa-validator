@@ -10,9 +10,21 @@ interface TaxSelectProps {
   options: TaxOption[];
   onChange: (code: string) => void;
   required?: boolean;
+  /** 값이 아직 없을 수 있는 속성용 빈 선택지 문구. 있으면 맨 앞에 value=""로 보인다. */
+  placeholder?: string;
+  hint?: string;
 }
 
-export function TaxSelect({ id, label, value, options, onChange, required }: TaxSelectProps) {
+export function TaxSelect({
+  id,
+  label,
+  value,
+  options,
+  onChange,
+  required,
+  placeholder,
+  hint,
+}: TaxSelectProps) {
   return (
     <div className="field">
       <label htmlFor={id}>
@@ -20,6 +32,11 @@ export function TaxSelect({ id, label, value, options, onChange, required }: Tax
         {required && <span aria-hidden="true"> *</span>}
       </label>
       <select id={id} value={value} onChange={(e) => onChange(e.target.value)}>
+        {placeholder !== undefined && (
+          <option value="" disabled>
+            {placeholder}
+          </option>
+        )}
         {options.map((o) => (
           <option key={o.code} value={o.code}>
             {o.label}
@@ -27,6 +44,7 @@ export function TaxSelect({ id, label, value, options, onChange, required }: Tax
           </option>
         ))}
       </select>
+      {hint && <p className="form-hint">{hint}</p>}
     </div>
   );
 }

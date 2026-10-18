@@ -49,14 +49,14 @@ export function buildReportHtml(model: ReportModel): string {
       </table>
     </section>`);
 
-  // Ⅲ. 문항 정보표 (11열)
+  // Ⅲ. 문항 정보표 (11열). '시나리오 상황'은 단위문항 속성, '상황'은 문항이 다루는 지문의 상황(Req 3.8)
   sections.push(`
     <section class="rpt-section">
       <h2>Ⅲ. 문항 정보표 〈표 Ⅲ-2〉</h2>
       <table class="rpt-table rpt-small">
         <thead><tr>
           <th>단위</th><th>문항 ID</th><th>단계·묶음</th><th>과정</th><th>체재</th>
-          <th>유형</th><th>출처</th><th>상황</th><th>응답 형식</th><th>난도</th>
+          <th>유형</th><th>출처</th><th>시나리오 상황</th><th>상황</th><th>응답 형식</th><th>난도</th>
         </tr></thead>
         <tbody>
           ${m.itemTable
@@ -64,7 +64,7 @@ export function buildReportHtml(model: ReportModel): string {
               (r) => `<tr>
             <td>${r.unitNo}</td><td>${esc(r.id)}</td><td>${esc(r.stageBlock)}</td>
             <td>${esc(r.process)}</td><td>${esc(r.textFormat)}</td><td>${esc(r.textType)}</td>
-            <td>${esc(r.source)}</td><td>${esc(r.situation)}</td><td>${esc(r.responseFormat)}</td><td>${esc(r.difficulty)}</td>
+            <td>${esc(r.source)}</td><td>${esc(r.scenarioSituation)}</td><td>${esc(r.situation)}</td><td>${esc(r.responseFormat)}</td><td>${esc(r.difficulty)}</td>
           </tr>`,
             )
             .join('')}

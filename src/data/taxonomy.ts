@@ -69,6 +69,11 @@ export const sourceRequirementOptions = taxonomy.item_required.source_requiremen
 export const difficultyOptions = taxonomy.item_required.difficulty.options as TaxOption[];
 
 export const passageSituationOptions = taxonomy.passage.situation.options as TaxOption[];
+/** 단위문항 '시나리오 상황' (Req 3.7). 선택지는 지문 상황과 같은 4개(개인적/공적/교육적/직업적). */
+export const scenarioSituationTitle = taxonomy.unit.scenario_situation.label;
+export const scenarioSituationOptions = passageSituationOptions;
+/** 지문 상황이 서로 다른 지문 2개 이상을 다룰 때의 표시값 (Req 3.8) */
+export const mixedSituationLabel = taxonomy.passage.situation.mixed_label;
 export const passageTextFormatOptions = taxonomy.passage.text_format.options as TaxOption[];
 export const passageTextTypeOptions = taxonomy.passage.text_type.options as TaxOption[];
 export const passageOrganizationOptions = taxonomy.passage.organization.options as TaxOption[];
@@ -110,6 +115,9 @@ export function gradeLabel(code: string): string {
 }
 export function situationLabel(code: string): string {
   return labelOf(passageSituationOptions, code);
+}
+export function scenarioSituationLabel(code: string | undefined): string {
+  return code ? labelOf(scenarioSituationOptions, code) : '';
 }
 export function textFormatLabel(code: string): string {
   return labelOf(passageTextFormatOptions, code);

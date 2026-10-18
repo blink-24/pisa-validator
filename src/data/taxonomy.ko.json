@@ -98,9 +98,17 @@
       ]
     }
   },
+  "unit": {
+    "scenario_situation": {
+      "label": "시나리오 상황",
+      "desc": "단위문항 시나리오(읽기 목적·맥락)가 놓인 상황. 선택지는 passage.situation과 같고, 지문의 '상황'과 별도로 저장한다."
+    }
+  },
   "passage": {
     "situation": {
       "label": "상황",
+      "mixed_label": "복합",
+      "mixed_desc": "문항이 다루는 지문이 2개 이상이고 지문 상황이 서로 다를 때 보고서에 표시하는 값",
       "options": [
         { "code": "personal", "label": "개인적" },
         { "code": "public", "label": "공적" },

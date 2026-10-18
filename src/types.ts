@@ -48,6 +48,8 @@ export interface Unit {
   unitNo: number; // 901, 902 ...
   title: string;
   scenarioIntro: string;
+  /** 시나리오 상황 (Req 3.7). 지문의 situation과 별도로 저장. 이전 데이터에는 없을 수 있음. */
+  scenarioSituation?: Code;
   passageIds: string[];
 }
 
