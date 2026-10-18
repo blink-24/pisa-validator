@@ -2,14 +2,14 @@
   "format": "pisa-validator",
   "kind": "published",
   "version": 1,
-  "publishedAt": "2026-10-18T12:03:20.351Z",
+  "publishedAt": "2026-10-18T16:07:58.000Z",
   "activeSubtestId": "st_41d3e579-14f2-49b4-89ff-361199b1f2b8",
   "subtests": [
     {
       "format": "pisa-validator",
       "kind": "subtest",
       "version": 1,
-      "exportedAt": "2026-10-18T12:03:20.351Z",
+      "exportedAt": "2026-10-18T16:07:58.000Z",
       "subtest": {
         "id": "st_41d3e579-14f2-49b4-89ff-361199b1f2b8",
         "title": "ST-01 소설 속 기술, 우리 곁의 기술",
@@ -35,7 +35,7 @@
         },
         "allowWithinUnitNav": true,
         "createdAt": "2026-10-05T15:22:52.694Z",
-        "updatedAt": "2026-10-18T12:02:37.456Z"
+        "updatedAt": "2026-10-18T16:07:58.000Z"
       },
       "units": [
         {
@@ -425,7 +425,7 @@
           "order": 1,
           "stage": "core",
           "block": "none",
-          "stem": "하린의 제안대로 소설에 나오는 기술을 정리하려 한다. 각 기술이 소설에 나오는지 고르시오.",
+          "stem": "하린의 제안대로 소설에 나오는 기술을 정리하려 한다. 다음 항목이 소설에 나오는지 고르시오.",
           "cognitiveProcess": "scan_locate",
           "responseFormat": "complex_mc",
           "sourceRequirement": "single",
@@ -435,17 +435,17 @@
             "literary"
           ],
           "questionIntent": "소설에 등장하는 기술을 정확히 확인한다.",
-          "commentary": "(라)는 \"배달\"에서, (마)는 \"냉장고\"라는 낱말에서 생길 수 있는 오독을 겨냥한 것이다. 5행 모두 맞아야 정답.",
+          "commentary": "(가)는 요리를 실제로 했는지가 아니라 배양육이 소설 속 세계에 있는지를, (나)는 존이 기술이라는 추론 없이 존의 행동만 확인하도록 2026.10.19. 모의 응시 결과를 반영해 고쳤다. (라)는 \"배달\"에서, (마)는 \"냉장고\"라는 낱말에서 생길 수 있는 오독을 겨냥한 것이다. 5행 모두 맞아야 정답.",
           "matrix": {
             "rows": [
               {
                 "id": "r_bd1f0fac-b297-4d3c-94a4-f69cd44116cf",
-                "text": "(가) 배양육으로 만든 요리",
+                "text": "(가) 배양육이라는 식재료",
                 "answer": "나온다"
               },
               {
                 "id": "r_6de5b85c-6bb7-4d02-bfff-bcd1672db95a",
-                "text": "(나) 사람의 표정과 억양을 읽어 기분을 알아채는 존재",
+                "text": "(나) 표정과 억양만으로 사람의 기분을 알아채는 존재(존)",
                 "answer": "나온다"
               },
               {
