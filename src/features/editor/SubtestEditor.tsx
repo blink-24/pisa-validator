@@ -70,7 +70,13 @@ export function SubtestEditor() {
         <UnitsTab subtestId={subtest.id} units={units} passages={passages} onChanged={refresh} />
       )}
       {tab === 'items' && (
-        <ItemsTab subtest={subtest} units={units} items={items} onChanged={refresh} />
+        <ItemsTab
+          subtest={subtest}
+          units={units}
+          passages={passages}
+          items={items}
+          onChanged={refresh}
+        />
       )}
       {tab === 'routing' && <RoutingTab subtest={subtest} items={items} onSaved={refresh} />}
       {tab === 'grade' && <GradeTab subtest={subtest} onSaved={refresh} />}

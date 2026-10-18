@@ -12,8 +12,10 @@ import {
 } from '../../data/taxonomy';
 import { uid } from '../../core/ids';
 import { updateItem, itemIdExists } from '../../data/editorRepo';
+import { hasExplicitPassages } from '../../core/itemPassages';
 import type {
   Item,
+  Passage,
   ResponseFormat,
   Choice,
   ComplexMatrix,
@@ -21,7 +23,15 @@ import type {
   CodingValue,
 } from '../../types';
 
-export function ItemForm({ item, onSaved }: { item: Item; onSaved: () => void }) {
+export function ItemForm({
+  item,
+  unitPassages,
+  onSaved,
+}: {
+  item: Item;
+  unitPassages: Passage[];
+  onSaved: () => void;
+}) {
   const [draft, setDraft] = useState<Item>(normalize(item));
   const [idError, setIdError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
@@ -61,7 +71,7 @@ export function ItemForm({ item, onSaved }: { item: Item; onSaved: () => void })
       setIdError(`문항 ID '${draft.id}'가 이미 존재합니다.`);
       return;
     }
-    await updateItem(draft);
+    await updateItem(withCleanPassageIds(draft, unitPassages));
     setSaved(true);
     onSaved();
   }
@@ -107,6 +117,12 @@ export function ItemForm({ item, onSaved }: { item: Item; onSaved: () => void })
           onChange={(c) => set('difficulty', c as Item['difficulty'])}
         />
       </div>
+
+      <PassagePicker
+        draft={draft}
+        unitPassages={unitPassages}
+        onChange={(ids) => set('passageIds', ids)}
+      />
 
       {/* 형식별 입력 UI */}
       {draft.responseFormat === 'simple_mc' && <SimpleMcEditor draft={draft} setDraft={setDraft} />}
@@ -197,6 +213,87 @@ export function ItemForm({ item, onSaved }: { item: Item; onSaved: () => void })
 }
 
 /** 형식에 맞게 payload를 보정(없는 필드 초기화). */
+/** 저장 전 정리: 단위에 없는 지문 ID를 빼고, 남는 게 없으면 지정 해제(= 단위 지문 전체) */
+function withCleanPassageIds(item: Item, unitPassages: Passage[]): Item {
+  if (!item.passageIds) return item;
+  const inUnit = new Set(unitPassages.map((p) => p.id));
+  const out: Item = { ...item, passageIds: item.passageIds.filter((id) => inUnit.has(id)) };
+  if (!out.passageIds!.length) delete out.passageIds;
+  return out;
+}
+
+/**
+ * '다루는 지문' 체크박스 (Req 4.11). 지정이 없으면 단위의 지문 전체가 선택된 상태로 보인다.
+ * 한 번 바꾸면 그 선택이 저장된다. 마지막 하나는 해제할 수 없다.
+ */
+function PassagePicker({
+  draft,
+  unitPassages,
+  onChange,
+}: {
+  draft: Item;
+  unitPassages: Passage[];
+  onChange: (ids: string[]) => void;
+}) {
+  if (unitPassages.length === 0) {
+    return (
+      <div className="field">
+        <label>다루는 지문</label>
+        <p className="form-hint">
+          이 단위문항에 지문이 없습니다. '단위·지문' 탭에서 지문을 먼저 추가하세요.
+        </p>
+      </div>
+    );
+  }
+  const unitIds = unitPassages.map((p) => p.id);
+  const checked = new Set(
+    hasExplicitPassages(draft) ? draft.passageIds!.filter((id) => unitIds.includes(id)) : unitIds,
+  );
+  if (checked.size === 0) unitIds.forEach((id) => checked.add(id)); // 모두 단위 밖 ID였던 경우
+  const n = checked.size;
+  const warn =
+    draft.sourceRequirement === 'single' && n >= 2
+      ? "출처 요구가 '단일'인데 지문을 2개 이상 골랐습니다."
+      : draft.sourceRequirement === 'multiple' && n === 1 && unitIds.length >= 2
+        ? "출처 요구가 '다중'인데 지문을 1개만 골랐습니다."
+        : null;
+
+  function toggle(id: string) {
+    const next = new Set(checked);
+    if (next.has(id)) next.delete(id);
+    else next.add(id);
+    onChange(unitIds.filter((x) => next.has(x)));
+  }
+
+  return (
+    <fieldset className="box">
+      <legend>다루는 지문</legend>
+      <div className="stack-sm">
+        {unitPassages.map((p, i) => {
+          const on = checked.has(p.id);
+          return (
+            <label key={p.id} className="fw-normal">
+              <input
+                type="checkbox"
+                className="inline-control"
+                checked={on}
+                disabled={on && n === 1}
+                onChange={() => toggle(p.id)}
+              />
+              {p.title.trim() || `(제목 없음) 지문 ${i + 1}`}
+            </label>
+          );
+        })}
+      </div>
+      <p className="form-hint">
+        보고서의 상황·체재·유형은 여기서 고른 지문으로 계산합니다. 고르지 않으면 단위의 지문 전체로
+        봅니다.
+      </p>
+      {warn && <p className="form-warn">{warn}</p>}
+    </fieldset>
+  );
+}
+
 function normalize(item: Item): Item {
   const out: Item = { ...item };
   switch (item.responseFormat) {

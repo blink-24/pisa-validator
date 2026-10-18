@@ -54,6 +54,7 @@ interface Item {
   stage: 'core' | 'stage1' | 'stage2';
   block: 'none' | 'low' | 'high'; // core는 'none'
   stem: string;                // 발문(HTML)
+  passageIds?: string[];       // 다루는 지문(Req 4.11). 단위의 지문 중에서만. 없거나 빈 배열이면 단위 지문 전체
   // 필수 4속성
   cognitiveProcess: Code;      // 세부 코드 (대분류는 taxonomy에서 역참조)
   responseFormat: 'simple_mc' | 'complex_mc' | 'open_human' | 'short_auto';
@@ -106,7 +107,7 @@ interface Asset { id: string; blob: Blob; mime: string; name: string } // 이미
 interface AppMeta { key: 'activeSubtestId' | 'lastBackupAt' | 'persisted'; value: string }
 ```
 
-Dexie 스토어: `subtests, units, passages, items, sessions, assets, meta`. 인덱스: `items.subtestId`, `items.[subtestId+stage+block]`, `sessions.subtestId`, `sessions.anonCode`.
+Dexie 스토어(현재 version 2 — v2는 Item.passageIds 추가, 색인 변화·upgrade 없음): `subtests, units, passages, items, sessions, assets, meta`. 인덱스: `items.subtestId`, `items.[subtestId+stage+block]`, `sessions.subtestId`, `sessions.anonCode`.
 
 ## 3. 핵심 알고리즘
 
@@ -155,6 +156,15 @@ provisional = 미채점 open_human 문항 존재
 
 ### 3.5 정합성 점검 (`conformance.ts`)
 Requirement 7.1 항목별 순수 함수 → `{ id, label, level: 'pass'|'warn'|'error', itemIds: string[], basis: string }[]`. `basis`에는 근거 문서 쪽수(예: "RRE 2019-11 pp.39-43")를 고정 문자열로 둔다.
+
+### 3.5.1 문항이 다루는 지문 (`itemPassages.ts`, Req 4.11)
+- `itemPassageIds(item, unit)`: `item.passageIds`가 있으면 그중 단위에 있는 것만 단위 지문 순서대로, 없으면 단위 지문 전체.
+- 보고서 Ⅲ 상황·체재·유형과 Ⅳ 평가틀 특성은 이 지문들로 `combinedLabel`(없음 '-', 같음 그 값, 다름 '복합') 계산. 체재·유형의 '복합'은 taxonomy `mixed_ext: true` → Ⅲ 표 아래 주석.
+- 정합성: 출처 요구와 지문 수 불일치(경고), 단위 밖 지문 ID(오류).
+
+### 3.5.2 사본 ID 재배정 (`copyRemap.ts`)
+- 지문·문항 ID는 DB 전역 키다. 복제·'새 사본으로 가져오기'는 단위·지문 ID를 항상 새로 만들고 `unit.passageIds`·`item.passageIds`를 함께 바꾼다.
+- 문항 ID가 기존과 겹치면 사본의 단위 번호를 기기에서 쓰지 않는 다음 번호로 다시 매긴다(예: 901→906). 겹치지 않으면 그대로.
 
 ### 3.6 문항 통계 (`stats.ts`)
 - p = 문항 평균 득점비율.

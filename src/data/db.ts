@@ -34,6 +34,17 @@ export class PisaDB extends Dexie {
       assets: 'id',
       meta: 'key',
     });
+    // v2: Item.passageIds(문항이 다루는 지문, Req 4.11) 추가. 색인 없는 선택 필드라 저장소 구조는
+    // 그대로이고 기존 레코드 변환(upgrade)도 필요 없다. 스키마 변경 규칙에 따라 버전만 올린다.
+    this.version(2).stores({
+      subtests: 'id, updatedAt',
+      units: 'id, subtestId, unitNo',
+      passages: 'id, unitId',
+      items: 'id, subtestId, unitId, [subtestId+stage+block]',
+      sessions: 'id, subtestId, anonCode, submittedAt',
+      assets: 'id',
+      meta: 'key',
+    });
   }
 }
 

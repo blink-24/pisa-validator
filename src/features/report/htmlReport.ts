@@ -70,6 +70,7 @@ export function buildReportHtml(model: ReportModel): string {
             .join('')}
         </tbody>
       </table>
+      ${m.itemTableNotes.map((n) => `<p class="rpt-footnote">※ ${esc(n)}</p>`).join('')}
     </section>`);
 
   // Ⅳ. 문항별 상세
@@ -176,8 +177,9 @@ export function buildReportHtml(model: ReportModel): string {
   tr { page-break-inside:avoid; }
   .rpt-kv th { width:28%; background:#f3f4f6; }
   .rpt-table thead th { background:#f3f4f6; }
-  .rpt-small { font-size:9pt; }
+  .rpt-small { font-size:9pt; word-break:keep-all; } /* '연속'이 '연/속'으로 끊기지 않게 */
   .rpt-note { color:#b45309; }
+  .rpt-footnote { font-size:9pt; color:#444; margin-top:4px; }
   .rpt-limit li { margin-bottom:4px; }
   .rpt-cover { text-align:center; margin:40px 0 24px; }
 </style></head>

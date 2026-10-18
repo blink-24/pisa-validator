@@ -118,6 +118,9 @@
     },
     "text_format": {
       "label": "텍스트 체재",
+      "mixed_label": "복합",
+      "mixed_ext": true,
+      "mixed_desc": "문항이 다루는 지문이 2개 이상이고 체재가 서로 다를 때 보고서에 표시하는 본 도구의 확장 표기. 한 텍스트 안에 연속·비연속이 섞인 PISA 분류 '혼합'과 다르다.",
       "options": [
         { "code": "continuous", "label": "연속" },
         { "code": "non_continuous", "label": "비연속" },
@@ -126,6 +129,9 @@
     },
     "text_type": {
       "label": "텍스트 유형",
+      "mixed_label": "복합",
+      "mixed_ext": true,
+      "mixed_desc": "문항이 다루는 지문이 2개 이상이고 유형이 서로 다를 때 보고서에 표시하는 본 도구의 확장 표기.",
       "options": [
         { "code": "description", "label": "기술" },
         { "code": "narration", "label": "서사" },

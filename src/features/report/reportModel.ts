@@ -22,8 +22,12 @@ import {
   textTypeLabel,
   stageLabel,
   blockLabel,
+  mixedTextFormat,
+  mixedTextType,
+  taxonomy,
 } from '../../data/taxonomy';
-import type { Subtest, Unit, Passage, Item } from '../../types';
+import { combinedLabel, itemPassages } from '../../core/itemPassages';
+import type { Subtest, Passage, Item } from '../../types';
 
 export interface ReportItemRow {
   unitNo: number;
@@ -60,6 +64,8 @@ export interface ReportModel {
   };
   frameworkTable: { dimension: string; subcategory: string; kinds: string }[];
   itemTable: ReportItemRow[];
+  /** Ⅲ 표 아래 주석 (확장 표기 '복합'을 썼을 때) */
+  itemTableNotes: string[];
   itemDetails: ReportItemDetail[];
   conformance: ConformanceResult[];
   pilot?: {
@@ -81,28 +87,35 @@ function stageBlockLabel(it: Item): string {
   return it.stage === 'core' ? stageLabel('core') : `${stageLabel(it.stage)} ${blockLabel(it.block)}`;
 }
 
-function passageOf(item: Item, units: Unit[], passages: Passage[]): Passage | undefined {
-  return passagesOf(item, units, passages)[0];
-}
-
-/** 문항이 다루는 지문 = 문항이 속한 단위문항의 지문(단위의 지문 순서대로) */
-function passagesOf(item: Item, units: Unit[], passages: Passage[]): Passage[] {
-  const unit = units.find((u) => u.id === item.unitId);
-  if (!unit) return [];
-  return unit.passageIds
-    .map((id) => passages.find((p) => p.id === id))
-    .filter((p): p is Passage => !!p);
-}
-
 /**
  * 보고서 Ⅲ '상황' 열 값 (Req 3.8).
  * 지문이 없으면 '-', 지문 상황이 모두 같으면 그 상황, 2개 이상인데 서로 다르면 '복합'.
  */
 export function itemSituationLabel(itemPassages: Passage[]): string {
-  if (itemPassages.length === 0) return '-';
-  const kinds = new Set(itemPassages.map((p) => p.situation));
-  if (kinds.size > 1) return mixedSituationLabel;
-  return situationLabel(itemPassages[0]!.situation);
+  return combinedLabel(
+    itemPassages.map((p) => p.situation),
+    situationLabel,
+    mixedSituationLabel,
+  );
+}
+
+/** 문항이 다루는 지문 기준 평가틀 특성(상황·체재·유형) — Ⅲ 표와 Ⅳ 상세가 같은 값을 쓴다 (Req 4.11) */
+export function itemTextTraits(itemPassages: Passage[]): {
+  situation: string;
+  textFormat: string;
+  textType: string;
+  extMixed: boolean; // 확장 표기 '복합'(체재·유형)을 썼는지
+} {
+  const formats = itemPassages.map((p) => p.textFormat);
+  const types = itemPassages.map((p) => p.textType);
+  return {
+    situation: itemSituationLabel(itemPassages),
+    textFormat: combinedLabel(formats, textFormatLabel, mixedTextFormat.label),
+    textType: combinedLabel(types, textTypeLabel, mixedTextType.label),
+    extMixed:
+      (mixedTextFormat.ext && new Set(formats).size > 1) ||
+      (mixedTextType.ext && new Set(types).size > 1),
+  };
 }
 
 export async function buildReportModel(subtestId: string): Promise<ReportModel> {
@@ -115,27 +128,40 @@ export async function buildReportModel(subtestId: string): Promise<ReportModel> 
 
   const sessions = (await listSessions(subtestId)).filter((s) => s.submittedAt);
 
+  const unitOf = (it: Item) => units.find((u) => u.id === it.unitId);
+  const traitsById = new Map(
+    items.map((it) => [it.id, itemTextTraits(itemPassages(it, unitOf(it), passages))]),
+  );
+
   const itemTable: ReportItemRow[] = items.map((it) => {
-    const p = passageOf(it, units, passages);
-    const unit = units.find((u) => u.id === it.unitId);
+    const unit = unitOf(it);
     const scenario = scenarioSituationLabel(unit?.scenarioSituation);
+    const t = traitsById.get(it.id)!;
     return {
       unitNo: unit?.unitNo ?? 0,
       id: it.id,
       stageBlock: stageBlockLabel(it),
       process: processDetailLabel(it.cognitiveProcess),
-      textFormat: p ? textFormatLabel(p.textFormat) : '-',
-      textType: p ? textTypeLabel(p.textType) : '-',
+      textFormat: t.textFormat,
+      textType: t.textType,
       source: sourceRequirementLabel(it.sourceRequirement),
       scenarioSituation: scenario || '-',
-      situation: itemSituationLabel(passagesOf(it, units, passages)),
+      situation: t.situation,
       responseFormat: responseFormatLabel(it.responseFormat),
       difficulty: difficultyLabel(it.difficulty),
     };
   });
 
+  const itemTableNotes = [...traitsById.values()].some((t) => t.extMixed)
+    ? [
+        `'${mixedTextFormat.label}'(${taxonomy.passage.text_format.label}·${taxonomy.passage.text_type.label})은 ` +
+          'PISA 원 분류가 아닌 본 도구의 확장 표기로, 문항이 다루는 지문들의 값이 서로 다를 때 씁니다.',
+      ]
+    : [];
+
   const itemDetails: ReportItemDetail[] = items.map((it) => {
     const group = groupOfProcess(it.cognitiveProcess);
+    const t = traitsById.get(it.id)!;
     return {
       id: it.id,
       stem: it.stem,
@@ -145,6 +171,9 @@ export async function buildReportModel(subtestId: string): Promise<ReportModel> 
         { label: '출처 요구', value: sourceRequirementLabel(it.sourceRequirement) },
         { label: '난도', value: difficultyLabel(it.difficulty) },
         { label: '단계·묶음', value: stageBlockLabel(it) },
+        { label: taxonomy.passage.situation.label, value: t.situation },
+        { label: taxonomy.passage.text_format.label, value: t.textFormat },
+        { label: taxonomy.passage.text_type.label, value: t.textType },
       ],
       intent: it.questionIntent,
       commentary: it.commentary,
@@ -181,6 +210,7 @@ export async function buildReportModel(subtestId: string): Promise<ReportModel> 
     },
     frameworkTable: buildFrameworkTable(items, passages),
     itemTable,
+    itemTableNotes,
     itemDetails,
     conformance,
     sources,
