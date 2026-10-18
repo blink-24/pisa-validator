@@ -14,6 +14,7 @@ import {
 } from '../../data/sessionEngine';
 import { ScenarioIntro } from './ScenarioIntro';
 import { PassageView } from './PassageView';
+import { unlockForCode, type ProtectedState } from '../../data/protected';
 import { ItemPlayer } from './ItemPlayer';
 import { ConfirmDialog } from '../../components/ConfirmDialog';
 import { stageLabel, blockLabel } from '../../data/taxonomy';
@@ -37,6 +38,20 @@ export function TestScreen() {
   const sessionRef = useRef<Session | null>(null);
   const submittingRef = useRef(false);
   const [justSaved, setJustSaved] = useState(false);
+  const [protectedState, setProtectedState] = useState<ProtectedState | undefined>(undefined);
+  const anonCode = session?.anonCode;
+
+  // 보호 지문: 이 응시 코드로 풀리는 원문만 보여 준다 (Req 3.9)
+  useEffect(() => {
+    if (!anonCode) return;
+    let alive = true;
+    void unlockForCode(anonCode).then((st) => {
+      if (alive) setProtectedState(st);
+    });
+    return () => {
+      alive = false;
+    };
+  }, [anonCode]);
 
   function applySession(s: Session) {
     sessionRef.current = s;
@@ -260,7 +275,7 @@ export function TestScreen() {
 
       <div className="split-view">
         <div className="passage-pane">
-          <PassageView passages={passages} />
+          <PassageView passages={passages} protectedState={protectedState} />
         </div>
         <div className="item-pane">
           {currentUnitItems.map((item, i) => (

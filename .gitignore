@@ -27,3 +27,7 @@ src/data/local-*.json
 
 # TypeScript incremental build cache
 *.tsbuildinfo
+
+# 보호 지문 원문(평문)은 커밋하지 않는다 (Req 3.9). 암호문 public/content/protected.json만 커밋.
+*.local.html
+*.local.txt

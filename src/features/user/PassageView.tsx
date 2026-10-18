@@ -9,8 +9,18 @@ import {
   organizationLabel,
 } from '../../data/taxonomy';
 import type { Passage } from '../../types';
+import { applyProtected, DEFAULT_MARKERS } from '../../core/protectedText';
+import { sanitizeHtml } from '../../core/sanitize';
+import type { ProtectedState } from '../../data/protected';
 
-export function PassageView({ passages }: { passages: Passage[] }) {
+export function PassageView({
+  passages,
+  protectedState,
+}: {
+  passages: Passage[];
+  /** 보호 지문 상태 (Req 3.9). 없으면 기본 자리표시를 잠금 안내로 바꾼다. */
+  protectedState?: ProtectedState;
+}) {
   const [active, setActive] = useState(0);
 
   if (passages.length === 0) {
@@ -39,12 +49,23 @@ export function PassageView({ passages }: { passages: Passage[] }) {
         </div>
       )}
 
-      <PassageBody passage={current} />
+      <PassageBody passage={current} protectedState={protectedState} />
     </div>
   );
 }
 
-function PassageBody({ passage }: { passage: Passage }) {
+function PassageBody({
+  passage,
+  protectedState,
+}: {
+  passage: Passage;
+  protectedState?: ProtectedState;
+}) {
+  const markers = protectedState?.markers ?? DEFAULT_MARKERS;
+  const unlocked = protectedState?.unlocked ?? new Map<string, string>();
+  const body = passage.bodyHtml
+    ? sanitizeHtml(applyProtected(passage.bodyHtml, markers, unlocked))
+    : '';
   return (
     <article>
       {passage.title && <h3 className="passage-title">{passage.title}</h3>}
@@ -55,7 +76,7 @@ function PassageBody({ passage }: { passage: Passage }) {
       ))}
       <div
         className="passage-body"
-        dangerouslySetInnerHTML={{ __html: passage.bodyHtml || '<p class="muted">(본문 없음)</p>' }}
+        dangerouslySetInnerHTML={{ __html: body || '<p class="muted">(본문 없음)</p>' }}
       />
       <p className="passage-meta">
         {[
