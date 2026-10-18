@@ -7,6 +7,7 @@ import {
   type SerializedAsset,
 } from './assets';
 import { uid } from '../core/ids';
+import { remapForCopy, type CopyContext } from '../core/copyRemap';
 import type { Subtest, Unit, Passage, Item, Session } from '../types';
 
 export const FORMAT = 'pisa-validator';
@@ -218,12 +219,19 @@ export async function importOverwrite(
   return stId;
 }
 
+/** 사본 ID 재배정에 필요한 이 기기의 사용 중인 문항 ID·단위 번호 */
+export async function copyContext(assetIdMap?: Map<string, string>): Promise<CopyContext> {
+  const [itemIds, units] = await Promise.all([db.items.toCollection().primaryKeys(), db.units.toArray()]);
+  return {
+    usedItemIds: new Set(itemIds as string[]),
+    usedUnitNos: units.map((u) => u.unitNo),
+    ...(assetIdMap ? { assetIdMap } : {}),
+  };
+}
+
 async function importAsNewCopy(exp: SubtestExport): Promise<string> {
   const newStId = uid('st');
-  const unitIdMap = new Map<string, string>();
   const assetIdMap = new Map<string, string>();
-
-  for (const u of exp.units) unitIdMap.set(u.id, uid('u'));
   for (const a of exp.assets) assetIdMap.set(a.id, uid('img'));
 
   const now = new Date().toISOString();
@@ -234,21 +242,8 @@ async function importAsNewCopy(exp: SubtestExport): Promise<string> {
     createdAt: now,
     updatedAt: now,
   };
-  const units: Unit[] = exp.units.map((u) => ({
-    ...u,
-    id: unitIdMap.get(u.id)!,
-    subtestId: newStId,
-  }));
-  const passages: Passage[] = exp.passages.map((p) => ({
-    ...p,
-    unitId: unitIdMap.get(p.unitId) ?? p.unitId,
-    imageIds: (p.imageIds ?? []).map((imgId) => assetIdMap.get(imgId) ?? imgId),
-  }));
-  const items: Item[] = exp.items.map((it) => ({
-    ...it,
-    subtestId: newStId,
-    unitId: unitIdMap.get(it.unitId) ?? it.unitId,
-  }));
+  // 지문·문항까지 새 ID로 (같은 ID로 넣으면 이 기기의 기존 소검사 지문·문항을 덮어쓴다)
+  const { units, passages, items } = remapForCopy(exp, newStId, await copyContext(assetIdMap));
 
   await db.transaction('rw', db.subtests, db.units, db.passages, db.items, db.assets, async () => {
     await db.subtests.put(subtest);

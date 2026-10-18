@@ -3,9 +3,10 @@
 import { db, loadBundle } from './db';
 import { uid } from '../core/ids';
 import { serializeAssets, restoreAssets } from './assets';
-import { exportSubtest, downloadJson } from './transfer';
+import { exportSubtest, downloadJson, copyContext } from './transfer';
+import { remapForCopy } from '../core/copyRemap';
 import { getActiveSubtestId, setActiveSubtestId } from './active';
-import type { Subtest, Unit, Passage, Item } from '../types';
+import type { Subtest } from '../types';
 
 export function defaultSubtest(input: {
   title: string;
@@ -48,10 +49,7 @@ export async function cloneSubtest(subtestId: string): Promise<string> {
   if (!bundle) throw new Error('소검사를 찾을 수 없습니다.');
 
   const newStId = uid('st');
-  const unitIdMap = new Map<string, string>();
   const assetIdMap = new Map<string, string>();
-
-  for (const u of bundle.units) unitIdMap.set(u.id, uid('u'));
   const imageIds = bundle.passages.flatMap((p) => p.imageIds ?? []);
   for (const id of new Set(imageIds)) assetIdMap.set(id, uid('img'));
 
@@ -63,21 +61,8 @@ export async function cloneSubtest(subtestId: string): Promise<string> {
     createdAt: now,
     updatedAt: now,
   };
-  const units: Unit[] = bundle.units.map((u) => ({
-    ...u,
-    id: unitIdMap.get(u.id)!,
-    subtestId: newStId,
-  }));
-  const passages: Passage[] = bundle.passages.map((p) => ({
-    ...p,
-    unitId: unitIdMap.get(p.unitId) ?? p.unitId,
-    imageIds: (p.imageIds ?? []).map((id) => assetIdMap.get(id) ?? id),
-  }));
-  const items: Item[] = bundle.items.map((it) => ({
-    ...it,
-    subtestId: newStId,
-    unitId: unitIdMap.get(it.unitId) ?? it.unitId,
-  }));
+  // 지문·문항까지 새 ID로 (같은 ID로 넣으면 원본의 지문·문항을 덮어써 원본에서 사라진다)
+  const { units, passages, items } = remapForCopy(bundle, newStId, await copyContext(assetIdMap));
 
   // 이미지 자산 복제 (직렬화는 트랜잭션 밖에서 먼저 수행)
   const serialized = await serializeAssets([...new Set(imageIds)]);
