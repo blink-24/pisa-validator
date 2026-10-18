@@ -11,6 +11,7 @@ import {
 import type { Passage } from '../../types';
 import { applyProtected, DEFAULT_MARKERS } from '../../core/protectedText';
 import { sanitizeHtml } from '../../core/sanitize';
+import { formatSource } from '../../core/sourceFormat';
 import type { ProtectedState } from '../../data/protected';
 
 export function PassageView({
@@ -94,10 +95,7 @@ function PassageBody({
 }
 
 function renderSource(p: Passage) {
-  const s = p.source;
-  const parts = [s.author, s.work, s.publisher, s.year, s.pages ? `${s.pages}쪽` : ''].filter(
-    Boolean,
-  );
-  if (parts.length === 0) return null;
-  return <p className="passage-meta">출처: {parts.join(', ')}</p>;
+  const text = formatSource(p.source);
+  if (!text) return null;
+  return <p className="passage-meta">출처: {text}</p>;
 }

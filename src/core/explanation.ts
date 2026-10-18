@@ -3,7 +3,14 @@
 import type { Item, ResponseRecord, Subtest, Grade, PathStep } from '../types';
 import { byProcessGroup, scoredRate } from './grading';
 import { autoRate } from './routing';
-import { gradeLabel, processGroupLabel, blockLabel, stageLabel } from '../data/taxonomy';
+import { itemScore } from './scoring';
+import {
+  gradeLabel,
+  processGroupLabel,
+  blockLabel,
+  stageLabel,
+  groupOfProcess,
+} from '../data/taxonomy';
 import type { ProcessGroupCode } from '../data/taxonomy';
 
 export interface ExplanationInput {
@@ -20,32 +27,64 @@ function pct(n: number): number {
   return Math.round(n * 100);
 }
 
-/** 경로 요약: "1단계 상 묶음 → 2단계 상 묶음" */
+/** 점수 표기: 소수 첫째 자리까지, 정수면 '.0' 없이 (1.5 → "1.5", 2 → "2") */
+function fmtPoints(n: number): string {
+  return String(Math.round(n * 10) / 10);
+}
+
+/** 경로 요약: "1단계 상 묶음 → 2단계 상 묶음" (blockLabel이 이미 '… 묶음'을 돌려준다) */
 function summarizePath(path: PathStep[]): string {
   const parts = path
     .filter((p) => p.stage !== 'core')
-    .map((p) => `${stageLabel(p.stage)} ${blockLabel(p.block)} 묶음`);
+    .map((p) => `${stageLabel(p.stage)} ${blockLabel(p.block)}`);
   return parts.join(' → ');
 }
 
-/** 보완이 필요한 대분류: 정답률 최저. 동률이면 문항 수가 많은 쪽. 0개 대분류는 제외. */
-function weakestGroup(
-  groups: Record<ProcessGroupCode, { correct: number; total: number }>,
-): ProcessGroupCode | null {
-  let best: ProcessGroupCode | null = null;
-  let bestRate = Infinity;
-  let bestTotal = -1;
-  (Object.keys(groups) as ProcessGroupCode[]).forEach((g) => {
-    const { correct, total } = groups[g];
-    if (total === 0) return;
-    const rate = correct / total;
-    if (rate < bestRate || (rate === bestRate && total > bestTotal)) {
-      best = g;
-      bestRate = rate;
-      bestTotal = total;
-    }
-  });
-  return best;
+/**
+ * ④ 판단용 대분류별 득점률 = itemScore 합 / 채점된 문항 수.
+ * ③의 byProcessGroup(0.5 이상을 '맞힘'으로 세는 개수)과 달리 부분 점수를 그대로 반영한다.
+ * 미채점 서술형은 제외하고, 채점된 문항이 없는 대분류는 결과에 넣지 않는다.
+ */
+function groupScoreRates(
+  items: Item[],
+  responses: ResponseRecord[],
+): Partial<Record<ProcessGroupCode, { rate: number; total: number }>> {
+  const byId = new Map(responses.map((r) => [r.itemId, r]));
+  const acc: Partial<Record<ProcessGroupCode, { sum: number; total: number }>> = {};
+  for (const it of items) {
+    const g = groupOfProcess(it.cognitiveProcess);
+    if (!g) continue;
+    const s = itemScore(it, byId.get(it.id));
+    if (s == null) continue; // 미채점 서술형
+    const a = acc[g] ?? (acc[g] = { sum: 0, total: 0 });
+    a.sum += s;
+    a.total++;
+  }
+  const out: Partial<Record<ProcessGroupCode, { rate: number; total: number }>> = {};
+  for (const g of Object.keys(acc) as ProcessGroupCode[]) {
+    const a = acc[g]!;
+    out[g] = { rate: a.sum / a.total, total: a.total };
+  }
+  return out;
+}
+
+/** ④ 문장. 모두 득점률 1이면 '모두 해결', 아니면 득점률 최저(동률이면 문항 수가 많은 쪽) 대분류. */
+function supplementLine(items: Item[], responses: ResponseRecord[]): string | null {
+  const rates = groupScoreRates(items, responses);
+  const groups = (['locate', 'understand', 'evaluate_reflect'] as ProcessGroupCode[]).filter(
+    (g) => rates[g],
+  );
+  if (groups.length === 0) return null;
+  if (groups.every((g) => rates[g]!.rate === 1)) {
+    return '④ 모든 인지 과정의 문항을 해결하였습니다.';
+  }
+  let weak = groups[0]!;
+  for (const g of groups) {
+    const a = rates[g]!;
+    const b = rates[weak]!;
+    if (a.rate < b.rate || (a.rate === b.rate && a.total > b.total)) weak = g;
+  }
+  return `④ 정답률이 가장 낮은 '${processGroupLabel(weak)}' 문항 유형의 보완이 필요합니다.`;
 }
 
 export function buildExplanation(input: ExplanationInput): string {
@@ -79,10 +118,11 @@ export function buildExplanation(input: ExplanationInput): string {
     const r2 = total ? sum / total : 0;
     const finalBlock = path.filter((p) => p.stage === 'stage2')[0]?.block;
     const cut = finalBlock === 'high' ? pct(subtest.gradeRule.highBlockCut) : pct(subtest.gradeRule.lowBlockCut);
+    // 부분 점수(서술형 Code 1 = 0.5점)가 있어 '문항 수'로 반올림하면 비율과 어긋난다 → 점수로 쓴다.
     lines.push(
-      `② 이에 따라 ${summarizePath(path)}으로 응시했고, 최종 묶음에서 ${Math.round(sum)}/${total}문항(${pct(
-        r2,
-      )}%)을 해결하여 기준(${cut}%)에 따라 '${gradeLabel(grade)}'로 판정되었습니다.`,
+      `② 이에 따라 ${summarizePath(path)}으로 응시했고, 최종 묶음에서 ${total}점 만점에 ${fmtPoints(
+        sum,
+      )}점(${pct(r2)}%)을 얻어 기준(${cut}%)에 따라 '${gradeLabel(grade)}'로 판정되었습니다.`,
     );
   }
 
@@ -98,10 +138,10 @@ export function buildExplanation(input: ExplanationInput): string {
     lines.push(`③ 인지 과정별로는 ${g3.join(', ')}입니다.`);
   }
 
-  // ④ 보완 필요 유형
-  const weak = weakestGroup(groups);
-  if (weak) {
-    lines.push(`④ 정답률이 가장 낮은 '${processGroupLabel(weak)}' 문항 유형의 보완이 필요합니다.`);
+  // ④ 보완 필요 유형 (부분 점수 반영 득점률 기준). 잠정이면 채점된 문항만 본 판단임을 밝힌다.
+  const line4 = supplementLine(items, responses);
+  if (line4) {
+    lines.push(provisional ? `${line4} (채점된 문항 기준)` : line4);
   }
 
   // 등급별 설명문 (있으면)
