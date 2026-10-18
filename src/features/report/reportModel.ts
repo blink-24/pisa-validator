@@ -16,6 +16,8 @@ import {
   sourceRequirementLabel,
   difficultyLabel,
   situationLabel,
+  scenarioSituationLabel,
+  mixedSituationLabel,
   textFormatLabel,
   textTypeLabel,
   stageLabel,
@@ -31,7 +33,8 @@ export interface ReportItemRow {
   textFormat: string;
   textType: string;
   source: string; // 출처 요구
-  situation: string;
+  scenarioSituation: string; // 단위문항의 시나리오 상황 (Req 3.8)
+  situation: string; // 문항이 다루는 지문의 상황. 지문 상황이 서로 다르면 '복합'
   responseFormat: string;
   difficulty: string;
 }
@@ -79,21 +82,43 @@ function stageBlockLabel(it: Item): string {
 }
 
 function passageOf(item: Item, units: Unit[], passages: Passage[]): Passage | undefined {
+  return passagesOf(item, units, passages)[0];
+}
+
+/** 문항이 다루는 지문 = 문항이 속한 단위문항의 지문(단위의 지문 순서대로) */
+function passagesOf(item: Item, units: Unit[], passages: Passage[]): Passage[] {
   const unit = units.find((u) => u.id === item.unitId);
-  if (!unit) return undefined;
-  return passages.find((p) => unit.passageIds.includes(p.id));
+  if (!unit) return [];
+  return unit.passageIds
+    .map((id) => passages.find((p) => p.id === id))
+    .filter((p): p is Passage => !!p);
+}
+
+/**
+ * 보고서 Ⅲ '상황' 열 값 (Req 3.8).
+ * 지문이 없으면 '-', 지문 상황이 모두 같으면 그 상황, 2개 이상인데 서로 다르면 '복합'.
+ */
+export function itemSituationLabel(itemPassages: Passage[]): string {
+  if (itemPassages.length === 0) return '-';
+  const kinds = new Set(itemPassages.map((p) => p.situation));
+  if (kinds.size > 1) return mixedSituationLabel;
+  return situationLabel(itemPassages[0]!.situation);
 }
 
 export async function buildReportModel(subtestId: string): Promise<ReportModel> {
   const bundle = await loadBundle(subtestId);
   if (!bundle) throw new Error('소검사를 찾을 수 없습니다.');
-  const { subtest, units, passages, items } = bundle;
+  const { subtest, units, passages } = bundle;
+  // 표·상세는 단위문항 번호 → 단위 내 문항 순서로 (문항 ID CR{단위}Q{순서}와 같은 순서)
+  const unitNoOf = (it: Item) => units.find((u) => u.id === it.unitId)?.unitNo ?? 0;
+  const items = [...bundle.items].sort((a, b) => unitNoOf(a) - unitNoOf(b) || a.order - b.order);
 
   const sessions = (await listSessions(subtestId)).filter((s) => s.submittedAt);
 
   const itemTable: ReportItemRow[] = items.map((it) => {
     const p = passageOf(it, units, passages);
     const unit = units.find((u) => u.id === it.unitId);
+    const scenario = scenarioSituationLabel(unit?.scenarioSituation);
     return {
       unitNo: unit?.unitNo ?? 0,
       id: it.id,
@@ -102,7 +127,8 @@ export async function buildReportModel(subtestId: string): Promise<ReportModel> 
       textFormat: p ? textFormatLabel(p.textFormat) : '-',
       textType: p ? textTypeLabel(p.textType) : '-',
       source: sourceRequirementLabel(it.sourceRequirement),
-      situation: p ? situationLabel(p.situation) : '-',
+      scenarioSituation: scenario || '-',
+      situation: itemSituationLabel(passagesOf(it, units, passages)),
       responseFormat: responseFormatLabel(it.responseFormat),
       difficulty: difficultyLabel(it.difficulty),
     };

@@ -189,6 +189,16 @@ export function runConformance(input: ConformanceInput): ConformanceResult[] {
     basis: BASIS_FRAMEWORK,
   });
 
+  // 10) 단위문항마다 시나리오 상황 지정 (경고, Req 3.7). 이전 데이터 호환을 위해 오류가 아닌 경고.
+  const noScenarioUnits = new Set(units.filter((u) => !u.scenarioSituation).map((u) => u.id));
+  results.push({
+    id: 'scenario_situation',
+    label: '단위문항마다 시나리오 상황 지정',
+    level: noScenarioUnits.size ? 'warn' : 'pass',
+    itemIds: items.filter((i) => noScenarioUnits.has(i.unitId)).map((i) => i.id),
+    basis: BASIS_FRAMEWORK,
+  });
+
   return results;
 }
 

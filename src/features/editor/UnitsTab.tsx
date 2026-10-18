@@ -5,6 +5,8 @@ import { ConfirmDialog } from '../../components/ConfirmDialog';
 import { AssetImage } from '../../components/AssetImage';
 import { TaxSelect } from '../../components/TaxSelect';
 import {
+  scenarioSituationOptions,
+  scenarioSituationTitle,
   passageSituationOptions,
   passageTextFormatOptions,
   passageTextTypeOptions,
@@ -72,10 +74,17 @@ function UnitCard({
 }) {
   const [title, setTitle] = useState(unit.title);
   const [scenario, setScenario] = useState(unit.scenarioIntro);
+  const [scenarioSituation, setScenarioSituation] = useState(unit.scenarioSituation ?? '');
   const [confirmDelete, setConfirmDelete] = useState(false);
 
-  async function saveUnit() {
-    await updateUnit({ ...unit, title, scenarioIntro: scenario });
+  async function saveUnit(patch: Partial<Unit> = {}) {
+    await updateUnit({
+      ...unit,
+      title,
+      scenarioIntro: scenario,
+      ...(scenarioSituation ? { scenarioSituation } : {}),
+      ...patch,
+    });
     onChanged();
   }
 
@@ -92,7 +101,7 @@ function UnitCard({
 
       <div className="field">
         <label>제목</label>
-        <input value={title} onChange={(e) => setTitle(e.target.value)} onBlur={saveUnit} />
+        <input value={title} onChange={(e) => setTitle(e.target.value)} onBlur={() => saveUnit()} />
       </div>
       <div className="field">
         <label>시나리오 도입문 (학생에게 읽기 목적 제시)</label>
@@ -100,9 +109,21 @@ function UnitCard({
           rows={3}
           value={scenario}
           onChange={(e) => setScenario(e.target.value)}
-          onBlur={saveUnit}
+          onBlur={() => saveUnit()}
         />
       </div>
+      <TaxSelect
+        id={`scenario-situation-${unit.id}`}
+        label={scenarioSituationTitle}
+        value={scenarioSituation}
+        options={scenarioSituationOptions}
+        placeholder="선택하세요"
+        hint="시나리오(읽기 목적·맥락)의 상황입니다. 아래 지문의 '상황'과 별도로 저장됩니다."
+        onChange={(c) => {
+          setScenarioSituation(c);
+          saveUnit({ scenarioSituation: c });
+        }}
+      />
 
       <div className="card-header mt">
         <strong>지문 ({passages.length})</strong>

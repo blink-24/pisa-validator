@@ -36,6 +36,7 @@ interface Subtest {
 interface Unit {               // 단위문항
   id: string; subtestId: string; unitNo: number; // 901, 902...
   title: string; scenarioIntro: string;
+  scenarioSituation?: Code;    // 시나리오 상황(Req 3.7). 지문 situation과 별도. 미지정이면 정합성 경고
   passageIds: string[];
 }
 
