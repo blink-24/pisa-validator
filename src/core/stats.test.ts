@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { computeItemStats } from './stats';
+import { choiceRates, computeItemStats, pathDistribution, tagComparison } from './stats';
 import { makeItem, makeSession, resp } from './testFixtures';
 
 // 교정된 문항-총점 상관(design §3.6, Req 13.3).
@@ -45,5 +45,78 @@ describe('computeItemStats discrimination (교정된 문항-총점 상관)', () 
     expect(a.n).toBe(3);
     // A 정답: S1,S2 / 오답: S3 → p = 2/3
     expect(a.p).toBeCloseTo(2 / 3, 10);
+  });
+});
+
+describe('tagComparison (Req 13.6)', () => {
+  // A·C: 'scenario' 태그, 3명 응답(A p=2/3, C p=1). B: 같은 태그지만 아무도 보지 않음(n=0)
+  const A = makeItem({ id: 'CR901Q01', tags: ['scenario'] });
+  const B = makeItem({ id: 'CR901Q02', tags: ['scenario', 'literary'] });
+  const C = makeItem({ id: 'CR901Q03', tags: ['scenario'] });
+  const sessions = [
+    makeSession({ id: 's1', responses: [resp('CR901Q01', 'a'), resp('CR901Q03', 'a')] }),
+    makeSession({ id: 's2', responses: [resp('CR901Q01', 'a'), resp('CR901Q03', 'a')] }),
+    makeSession({ id: 's3', responses: [resp('CR901Q01', 'b'), resp('CR901Q03', 'a')] }),
+  ];
+
+  it('n=0 문항이 섞여도 평균 p는 응답 있는 문항만으로 계산한다 (회귀)', () => {
+    const items = [A, B, C];
+    const tags = tagComparison(items, computeItemStats(items, sessions));
+    // 옛 버그: (2/3 + 0 + 1) / 3 ≈ 0.556, 문항 수 3
+    expect(tags.scenario!.avgP).toBeCloseTo((2 / 3 + 1) / 2, 10);
+    expect(tags.scenario).toMatchObject({ count: 2, total: 3 });
+  });
+
+  it('응답 있는 문항이 하나도 없는 태그는 평균을 비운다(0%가 아님)', () => {
+    const items = [A, B, C];
+    expect(tagComparison(items, computeItemStats(items, sessions)).literary).toEqual({
+      count: 0,
+      total: 1,
+      avgP: null,
+      avgDisc: null,
+    });
+  });
+});
+
+describe('choiceRates (Req 13.3)', () => {
+  it('선지 ID 대신 ①②③ 번호와 정답(★) 여부, 고르지 않은 선지는 0%, 삭제된 선지는 ?', () => {
+    const item = makeItem({
+      id: 'CR901Q01',
+      choices: [
+        { id: 'c_x1', text: '가' },
+        { id: 'c_x2', text: '나' },
+        { id: 'c_x3', text: '다' },
+      ],
+      answer: 'c_x2',
+    });
+    expect(choiceRates(item, { c_x1: 1, c_x2: 2, c_gone: 1 })).toEqual([
+      { label: '①', isAnswer: false, count: 1, rate: 0.25 },
+      { label: '②', isAnswer: true, count: 2, rate: 0.5 },
+      { label: '③', isAnswer: false, count: 0, rate: 0 },
+      { label: '?', isAnswer: false, count: 1, rate: 0.25 },
+    ]);
+  });
+});
+
+describe('pathDistribution (Req 13.5)', () => {
+  const result = (grade: 'high' | 'mid' | 'low', provisional: boolean) => ({
+    grade,
+    provisional,
+    firstJudgement: { grade, correct: 0, total: 0, rate: 0 },
+    byProcessGroup: {
+      locate: { correct: 0, total: 0 },
+      understand: { correct: 0, total: 0 },
+      evaluate_reflect: { correct: 0, total: 0 },
+    },
+    explanation: '',
+  });
+  it("잠정 등급은 'high(잠정)'처럼 확정 등급과 따로 센다", () => {
+    const path = [{ stage: 'stage1', block: 'high', reason: '' }];
+    const d = pathDistribution([
+      makeSession({ id: 's1', path, result: result('high', false) }),
+      makeSession({ id: 's2', path, result: result('high', true) }),
+      makeSession({ id: 's3', path, result: result('high', false) }),
+    ]);
+    expect(d['stage1:high']).toEqual({ count: 3, grades: { high: 2, 'high(잠정)': 1 } });
   });
 });

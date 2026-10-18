@@ -7,6 +7,7 @@ import {
   pathDistribution,
   tagComparison,
   type ItemStat,
+  type TagStat,
 } from '../../core/stats';
 import {
   processDetailLabel,
@@ -72,7 +73,7 @@ export interface ReportModel {
     n: number;
     itemStats: ItemStat[];
     paths: Record<string, { count: number; grades: Record<string, number> }>;
-    tags: Record<string, { count: number; avgP: number; avgDisc: number | null }>;
+    tags: Record<string, TagStat>;
   };
   sources: { passageTitle: string; source: string }[];
   limitations: string[];
