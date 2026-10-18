@@ -71,9 +71,18 @@ export async function updatePassage(passage: Passage, subtestId: string): Promis
 }
 
 export async function deletePassage(unit: Unit, passageId: string): Promise<void> {
-  await db.transaction('rw', db.passages, db.units, async () => {
+  await db.transaction('rw', db.passages, db.units, db.items, async () => {
     await db.passages.delete(passageId);
     await db.units.put({ ...unit, passageIds: unit.passageIds.filter((id) => id !== passageId) });
+    // 문항의 '다루는 지문'에서도 뺀다 (Req 4.11). 남는 지문이 없으면 지정 해제 = 단위 지문 전체.
+    const items = await db.items.where('unitId').equals(unit.id).toArray();
+    for (const it of items) {
+      if (!it.passageIds?.includes(passageId)) continue;
+      const rest = it.passageIds.filter((id) => id !== passageId);
+      const next: Item = { ...it, passageIds: rest };
+      if (!rest.length) delete next.passageIds;
+      await db.items.put(next);
+    }
   });
   await touchSubtest(unit.subtestId);
 }

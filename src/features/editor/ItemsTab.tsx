@@ -5,16 +5,18 @@ import { ConfirmDialog } from '../../components/ConfirmDialog';
 import { ItemForm } from './ItemForm';
 import { addItem, deleteItem, reorderItems } from '../../data/editorRepo';
 import { responseFormatLabel, stageLabel, blockLabel } from '../../data/taxonomy';
-import type { Subtest, Unit, Item, Stage, Block } from '../../types';
+import type { Subtest, Unit, Passage, Item, Stage, Block } from '../../types';
 
 export function ItemsTab({
   subtest,
   units,
+  passages,
   items,
   onChanged,
 }: {
   subtest: Subtest;
   units: Unit[];
+  passages: Passage[];
   items: Item[];
   onChanged: () => void;
 }) {
@@ -52,6 +54,9 @@ export function ItemsTab({
               <ItemRow
                 key={item.id}
                 item={item}
+                unitPassages={unit.passageIds
+                  .map((id) => passages.find((p) => p.id === id))
+                  .filter((p): p is Passage => !!p)}
                 index={idx}
                 count={unitItems.length}
                 expanded={expanded === item.id}
@@ -112,6 +117,7 @@ function AddItemButtons({
 
 function ItemRow({
   item,
+  unitPassages,
   index,
   count,
   expanded,
@@ -121,6 +127,7 @@ function ItemRow({
   onSaved,
 }: {
   item: Item;
+  unitPassages: Passage[];
   index: number;
   count: number;
   expanded: boolean;
@@ -187,7 +194,7 @@ function ItemRow({
 
       {expanded && (
         <div style={{ padding: '0.75rem', borderTop: '1px solid var(--color-border)' }}>
-          <ItemForm item={item} onSaved={onSaved} />
+          <ItemForm item={item} unitPassages={unitPassages} onSaved={onSaved} />
         </div>
       )}
 

@@ -76,6 +76,15 @@ export const scenarioSituationOptions = passageSituationOptions;
 export const mixedSituationLabel = taxonomy.passage.situation.mixed_label;
 export const passageTextFormatOptions = taxonomy.passage.text_format.options as TaxOption[];
 export const passageTextTypeOptions = taxonomy.passage.text_type.options as TaxOption[];
+/** 문항이 다루는 지문들의 체재·유형이 서로 다를 때의 표시값 (Req 4.11). PISA 원 분류가 아닌 확장값. */
+export const mixedTextFormat = {
+  label: taxonomy.passage.text_format.mixed_label,
+  ext: taxonomy.passage.text_format.mixed_ext,
+};
+export const mixedTextType = {
+  label: taxonomy.passage.text_type.mixed_label,
+  ext: taxonomy.passage.text_type.mixed_ext,
+};
 export const passageOrganizationOptions = taxonomy.passage.organization.options as TaxOption[];
 export const passageTextSourceOptions = taxonomy.passage.text_source.options as TaxOption[];
 

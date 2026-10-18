@@ -99,6 +99,11 @@ export interface Item {
   stage: Stage;
   block: Block; // core는 'none'
   stem: string; // 발문 (HTML)
+  /**
+   * 문항이 다루는 지문 ID (Req 4.11). 소속 단위문항의 지문 중에서만 고른다.
+   * 없거나 빈 배열이면 단위문항의 지문 전체로 본다(이전 데이터 호환).
+   */
+  passageIds?: string[];
 
   // 필수 4속성
   cognitiveProcess: Code; // 세부 코드 (대분류는 taxonomy 역참조)

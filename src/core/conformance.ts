@@ -2,6 +2,7 @@
 
 import type { Item, Unit, Passage, Subtest } from '../types';
 import { groupOfProcess } from '../data/taxonomy';
+import { itemPassageIds, strayPassageIds } from './itemPassages';
 
 export type ConformanceLevel = 'pass' | 'warn' | 'error';
 
@@ -197,6 +198,39 @@ export function runConformance(input: ConformanceInput): ConformanceResult[] {
     level: noScenarioUnits.size ? 'warn' : 'pass',
     itemIds: items.filter((i) => noScenarioUnits.has(i.unitId)).map((i) => i.id),
     basis: BASIS_FRAMEWORK,
+  });
+
+  // 11) 출처 요구와 '다루는 지문' 수 일치 (경고, Req 4.11)
+  //     '단일'인데 2개 이상, '다중'인데 1개. 지정하지 않은 문항은 단위 지문 전체로 센다.
+  //     단위에 지문이 1개뿐인 '다중' 문항은 9)에서 오류로 잡으므로 여기서는 뺀다.
+  const unitById = new Map(units.map((u) => [u.id, u]));
+  const countBad = items
+    .filter((it) => {
+      const unit = unitById.get(it.unitId);
+      const n = itemPassageIds(it, unit).length;
+      if (it.sourceRequirement === 'single') return n >= 2;
+      if (it.sourceRequirement === 'multiple') return n === 1 && (unit?.passageIds.length ?? 0) >= 2;
+      return false;
+    })
+    .map((it) => it.id);
+  results.push({
+    id: 'source_passage_count',
+    label: "출처 요구와 다루는 지문 수 일치('단일'=1개, '다중'=2개 이상)",
+    level: countBad.length ? 'warn' : 'pass',
+    itemIds: countBad,
+    basis: BASIS_TABLE,
+  });
+
+  // 12) 다루는 지문이 소속 단위문항의 지문인지 (오류, Req 4.11)
+  const strayBad = items
+    .filter((it) => strayPassageIds(it, unitById.get(it.unitId)).length > 0)
+    .map((it) => it.id);
+  results.push({
+    id: 'item_passage_ref',
+    label: '다루는 지문이 소속 단위문항의 지문임',
+    level: strayBad.length ? 'error' : 'pass',
+    itemIds: strayBad,
+    basis: BASIS_TABLE,
   });
 
   return results;
