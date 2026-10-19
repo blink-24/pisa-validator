@@ -104,4 +104,48 @@ describe('buildExplanation', () => {
     expect(line(lines, '④').endsWith('(채점된 문항 기준)')).toBe(true);
     expect(line(lines, '④')).toContain(`'${processGroupLabel('locate')}'`);
   });
+
+  it("등급 뒤 조사: 상·중은 '으로', 하는 '로'", () => {
+    const hi = explain({
+      responses: [
+        resp('CR901Q01', 'a'),
+        resp('CR902Q01', 'a'),
+        resp('CR903Q01', 'a'),
+        resp('CR903Q02', '서술', { humanCode: 2 }),
+      ],
+    });
+    expect(line(hi, '①')).toContain("'상'(기준: 상 70% 이상, 중 40% 이상)으로 판정");
+    expect(line(hi, '②')).toContain("'상'으로 판정");
+    const mid = explain({ grade: 'mid', firstGrade: 'mid' });
+    expect(line(mid, '①')).toContain('중 40% 이상)으로 판정');
+    expect(line(mid, '②')).toContain("'중'으로 판정");
+    const low = explain({ grade: 'low', firstGrade: 'low' });
+    expect(line(low, '①')).toContain('중 40% 이상)로 판정');
+    expect(line(low, '②')).toContain("'하'로 판정");
+    expect(line(low, '②')).not.toContain("'하'으로");
+  });
+
+  it("잠정이면 ② 비율 괄호에 '채점된 문항 기준'이 붙고, 채점 후에는 없다", () => {
+    const base = [resp('CR901Q01', 'a'), resp('CR902Q01', 'a'), resp('CR903Q01', 'a')];
+    const prov = explain({ provisional: true, responses: [...base, resp('CR903Q02', '서술')] });
+    expect(line(prov, '②')).toContain('1점 만점에 1점(100%, 채점된 문항 기준)을 얻어');
+    const done = explain({ responses: [...base, resp('CR903Q02', '서술', { humanCode: 2 })] });
+    expect(line(done, '②')).not.toContain('채점된 문항 기준');
+  });
+
+  it("Code 1이면 ③에 '(부분 점수 1문항)', ④는 '득점률' 문구", () => {
+    const lines = explain({
+      responses: [
+        resp('CR901Q01', 'a'),
+        resp('CR902Q01', 'a'),
+        resp('CR903Q01', 'a'),
+        resp('CR903Q02', '서술', { humanCode: 1 }),
+      ],
+    });
+    expect(line(lines, '③')).toContain(
+      `${processGroupLabel('evaluate_reflect')} 1/1(부분 점수 1문항)`,
+    );
+    expect(line(lines, '④')).toContain('득점률이 가장 낮은');
+    expect(lines.join('\n')).not.toContain('정답률이 가장 낮은');
+  });
 });

@@ -32,6 +32,30 @@ function fmtPoints(n: number): string {
   return String(Math.round(n * 10) / 10);
 }
 
+/** 등급 뒤 조사: 받침이 없거나 ㄹ 받침이면 '로', 그 밖의 받침이면 '으로' (상·중 → 으로, 하 → 로) */
+function ro(word: string): string {
+  const code = word.charCodeAt(word.length - 1) - 0xac00;
+  if (code < 0 || code > 11171) return '로';
+  const jong = code % 28;
+  return jong === 0 || jong === 8 ? '로' : '으로';
+}
+
+/** ③ 표기용: 대분류별 부분 점수(0 < 점수 < 1) 문항 수. 미채점 서술형은 제외 */
+function partialCounts(
+  items: Item[],
+  responses: ResponseRecord[],
+): Partial<Record<ProcessGroupCode, number>> {
+  const byId = new Map(responses.map((r) => [r.itemId, r]));
+  const out: Partial<Record<ProcessGroupCode, number>> = {};
+  for (const it of items) {
+    const g = groupOfProcess(it.cognitiveProcess);
+    if (!g) continue;
+    const s = itemScore(it, byId.get(it.id));
+    if (s != null && s > 0 && s < 1) out[g] = (out[g] ?? 0) + 1;
+  }
+  return out;
+}
+
 /** 경로 요약: "1단계 상 묶음 → 2단계 상 묶음" (blockLabel이 이미 '… 묶음'을 돌려준다) */
 function summarizePath(path: PathStep[]): string {
   const parts = path
@@ -84,7 +108,7 @@ function supplementLine(items: Item[], responses: ResponseRecord[]): string | nu
     const b = rates[weak]!;
     if (a.rate < b.rate || (a.rate === b.rate && a.total > b.total)) weak = g;
   }
-  return `④ 정답률이 가장 낮은 '${processGroupLabel(weak)}' 문항 유형의 보완이 필요합니다.`;
+  return `④ 득점률이 가장 낮은 '${processGroupLabel(weak)}' 문항 유형의 보완이 필요합니다.`;
 }
 
 export function buildExplanation(input: ExplanationInput): string {
@@ -92,9 +116,7 @@ export function buildExplanation(input: ExplanationInput): string {
   const lines: string[] = [];
 
   const prov = provisional ? '(잠정)' : '';
-  lines.push(
-    `첫 소검사(${subtest.title})에서 '${gradeLabel(grade)}' 등급${prov}을 받았습니다.`,
-  );
+  lines.push(`첫 소검사(${subtest.title})에서 '${gradeLabel(grade)}' 등급${prov}을 받았습니다.`);
   lines.push('그 사유는 다음과 같습니다.');
 
   // ① 핵심단계 1차 판정
@@ -106,7 +128,7 @@ export function buildExplanation(input: ExplanationInput): string {
     lines.push(
       `① 핵심단계 ${coreR.correct}/${coreR.total}문항(${pct(coreR.rate)}%)을 해결하여 1차로 '${gradeLabel(
         firstGrade,
-      )}'(기준: 상 ${hi}% 이상, 중 ${mid}% 이상)으로 판정되었습니다.`,
+      )}'(기준: 상 ${hi}% 이상, 중 ${mid}% 이상)${ro(gradeLabel(firstGrade))} 판정되었습니다.`,
     );
   }
 
@@ -117,22 +139,32 @@ export function buildExplanation(input: ExplanationInput): string {
     const { sum, total } = scoredRate(stage2Items, responses);
     const r2 = total ? sum / total : 0;
     const finalBlock = path.filter((p) => p.stage === 'stage2')[0]?.block;
-    const cut = finalBlock === 'high' ? pct(subtest.gradeRule.highBlockCut) : pct(subtest.gradeRule.lowBlockCut);
+    const cut =
+      finalBlock === 'high'
+        ? pct(subtest.gradeRule.highBlockCut)
+        : pct(subtest.gradeRule.lowBlockCut);
     // 부분 점수(서술형 Code 1 = 0.5점)가 있어 '문항 수'로 반올림하면 비율과 어긋난다 → 점수로 쓴다.
+    // 잠정이면 미채점 서술형이 만점에서 빠지므로, 채점된 문항 기준임을 밝힌다.
+    const basis = provisional ? ', 채점된 문항 기준' : '';
     lines.push(
       `② 이에 따라 ${summarizePath(path)}으로 응시했고, 최종 묶음에서 ${total}점 만점에 ${fmtPoints(
         sum,
-      )}점(${pct(r2)}%)을 얻어 기준(${cut}%)에 따라 '${gradeLabel(grade)}'로 판정되었습니다.`,
+      )}점(${pct(r2)}%${basis})을 얻어 기준(${cut}%)에 따라 '${gradeLabel(grade)}'${ro(
+        gradeLabel(grade),
+      )} 판정되었습니다.`,
     );
   }
 
   // ③ 인지 과정 대분류별 성취
   const groups = byProcessGroup(items, responses);
+  const partial = partialCounts(items, responses);
   const g3: string[] = [];
   (['locate', 'understand', 'evaluate_reflect'] as ProcessGroupCode[]).forEach((g) => {
     const { correct, total } = groups[g];
     if (total === 0) return; // 0개 대분류는 생략
-    g3.push(`${processGroupLabel(g)} ${correct}/${total}`);
+    // byProcessGroup은 0.5점 이상을 '맞힘'으로 센다 → 부분 점수 문항은 따로 밝힌다.
+    const pc = partial[g] ? `(부분 점수 ${partial[g]}문항)` : '';
+    g3.push(`${processGroupLabel(g)} ${correct}/${total}${pc}`);
   });
   if (g3.length) {
     lines.push(`③ 인지 과정별로는 ${g3.join(', ')}입니다.`);
